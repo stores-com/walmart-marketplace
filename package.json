@@ -12,7 +12,7 @@
     "repository": "https://github.com/stores-com/walmart-marketplace",
     "scripts": {
         "coveralls": "nyc npm test && nyc report --reporter=text-lcov | coveralls",
-        "test": "node --test"
+        "test": "node --test --test-concurrency=true --test-reporter=spec"
     },
     "version": "1.5.3"
 }
