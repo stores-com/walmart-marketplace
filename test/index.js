@@ -1,14 +1,14 @@
-const assert = require('assert');
-const crypto = require('crypto');
+const assert = require('node:assert');
+const crypto = require('node:crypto');
 const test = require('node:test');
 
 const cache = require('memory-cache');
 
 const WalmartMarketplace = require('../index');
 
-test('WalmartMarketplace.inventory', async () => {
-    await test('WalmartMarketplace.inventory.getInventory(sku, options)', async () => {
-        await test('should return json', async () => {
+test('WalmartMarketplace.inventory', { concurrency: true }, async (t) => {
+    t.test('WalmartMarketplace.inventory.getInventory(sku, options)', { concurrency: true }, async (t) => {
+        t.test('should return json', async () => {
             const walmartMarketplace = new WalmartMarketplace({
                 clientId: process.env.CLIENT_ID,
                 clientSecret: process.env.CLIENT_SECRET
@@ -19,7 +19,7 @@ test('WalmartMarketplace.inventory', async () => {
             assert.strictEqual(inventory.sku, '97964_KFTest');
         });
 
-        await test('should throw error for non 200 status code', async () => {
+        t.test('should throw error for non 200 status code', async () => {
             let walmartMarketplace = new WalmartMarketplace({
                 clientId: process.env.CLIENT_ID,
                 clientSecret: process.env.CLIENT_SECRET
@@ -44,13 +44,13 @@ test('WalmartMarketplace.inventory', async () => {
             } catch (err) {
                 assert(err);
                 assert.strictEqual(err.cause.status, 500);
-                assert.strictEqual(err.message, 'INTERNAL SERVER ERROR');
+                assert.strictEqual(err.message, '500 INTERNAL SERVER ERROR');
             }
         });
     });
 
-    await test('WalmartMarketplace.inventory.getInventory(sku, options, callback)', async () => {
-        await test('should return json', function(t, done) {
+    t.test('WalmartMarketplace.inventory.getInventory(sku, options, callback)', { concurrency: true }, async (t) => {
+        t.test('should return json', (t, done) => {
             const walmartMarketplace = new WalmartMarketplace({
                 clientId: process.env.CLIENT_ID,
                 clientSecret: process.env.CLIENT_SECRET
@@ -79,8 +79,8 @@ test('WalmartMarketplace.inventory', async () => {
         });
     });
 
-    await test('WalmartMarketplace.inventory.updateInventory(inventory, options)', async () => {
-        await test('should return json', async () => {
+    t.test('WalmartMarketplace.inventory.updateInventory(inventory, options)', { concurrency: true }, async (t) => {
+        t.test('should return json', async () => {
             let walmartMarketplace = new WalmartMarketplace({
                 clientId: process.env.CLIENT_ID,
                 clientSecret: process.env.CLIENT_SECRET
@@ -111,7 +111,7 @@ test('WalmartMarketplace.inventory', async () => {
             assert(response);
         });
 
-        await test('should throw error for non 200 status code', async () => {
+        t.test('should throw error for non 200 status code', async () => {
             let walmartMarketplace = new WalmartMarketplace({
                 clientId: process.env.CLIENT_ID,
                 clientSecret: process.env.CLIENT_SECRET
@@ -144,13 +144,13 @@ test('WalmartMarketplace.inventory', async () => {
             } catch (err) {
                 assert(err);
                 assert.strictEqual(err.cause.status, 500);
-                assert.strictEqual(err.message, 'INTERNAL SERVER ERROR');
+                assert.strictEqual(err.message, '500 INTERNAL SERVER ERROR');
             }
         });
     });
 
-    await test('WalmartMarketplace.inventory.updateInventory(inventory, options, callback)', async () => {
-        await test('should return a 200 status code', function(t, done) {
+    t.test('WalmartMarketplace.inventory.updateInventory(inventory, options, callback)', { concurrency: true }, async (t) => {
+        t.test('should return a 200 status code', (t, done) => {
             const walmartMarketplace = new WalmartMarketplace({
                 clientId: process.env.CLIENT_ID,
                 clientSecret: process.env.CLIENT_SECRET
@@ -176,9 +176,9 @@ test('WalmartMarketplace.inventory', async () => {
     });
 });
 
-test('WalmartMarketplace.items', async () => {
-    await test('WalmartMarketplace.items.bulkItemSetup(feedType, file, options)', async () => {
-        await test('should return json', async () => {
+test('WalmartMarketplace.items', { concurrency: true }, async (t) => {
+    t.test('WalmartMarketplace.items.bulkItemSetup(feedType, file, options)', { concurrency: true }, async (t) => {
+        t.test('should return json', async () => {
             let walmartMarketplace = new WalmartMarketplace({
                 clientId: process.env.CLIENT_ID,
                 clientSecret: process.env.CLIENT_SECRET
@@ -221,7 +221,7 @@ test('WalmartMarketplace.items', async () => {
             assert(response);
         });
 
-        await test('should throw error for non 200 status code', async () => {
+        t.test('should throw error for non 200 status code', async () => {
             let walmartMarketplace = new WalmartMarketplace({
                 clientId: process.env.CLIENT_ID,
                 clientSecret: process.env.CLIENT_SECRET
@@ -266,13 +266,13 @@ test('WalmartMarketplace.items', async () => {
             } catch (err) {
                 assert(err);
                 assert.strictEqual(err.cause.status, 500);
-                assert.strictEqual(err.message, 'INTERNAL SERVER ERROR');
+                assert.strictEqual(err.message, '500 INTERNAL SERVER ERROR');
             }
         });
     });
 
-    await test('WalmartMarketplace.items.bulkItemSetup(feedType, file, options, callback)', async () => {
-        await test('should callback', function(t, done) {
+    t.test('WalmartMarketplace.items.bulkItemSetup(feedType, file, options, callback)', { concurrency: true }, async (t) => {
+        t.test('should callback', (t, done) => {
             const walmartMarketplace = new WalmartMarketplace({
                 clientId: process.env.CLIENT_ID,
                 clientSecret: process.env.CLIENT_SECRET
@@ -304,8 +304,8 @@ test('WalmartMarketplace.items', async () => {
         });
     });
 
-    await test('WalmartMarketplace.items.getAnItem(id, options)', async () => {
-        await test('should return json', async () => {
+    t.test('WalmartMarketplace.items.getAnItem(id, options)', { concurrency: true }, async (t) => {
+        t.test('should return json', async () => {
             let walmartMarketplace = new WalmartMarketplace({
                 clientId: process.env.CLIENT_ID,
                 clientSecret: process.env.CLIENT_SECRET
@@ -328,7 +328,7 @@ test('WalmartMarketplace.items', async () => {
             assert(itemDetails);
         });
 
-        await test('should return an error for non 200 status code', async () => {
+        t.test('should return an error for non 200 status code', async () => {
             let walmartMarketplace = new WalmartMarketplace({
                 clientId: process.env.CLIENT_ID,
                 clientSecret: process.env.CLIENT_SECRET
@@ -353,13 +353,13 @@ test('WalmartMarketplace.items', async () => {
             } catch (err) {
                 assert(err);
                 assert.strictEqual(err.cause.status, 500);
-                assert.strictEqual(err.message, 'INTERNAL SERVER ERROR');
+                assert.strictEqual(err.message, '500 INTERNAL SERVER ERROR');
             }
         });
     });
 
-    await test('WalmartMarketplace.items.getAnItem(id, options, callback)', async () => {
-        await test('should return an error for non 200 status code', function(t, done) {
+    t.test('WalmartMarketplace.items.getAnItem(id, options, callback)', { concurrency: true }, async (t) => {
+        t.test('should return an error for non 200 status code', (t, done) => {
             const walmartMarketplace = new WalmartMarketplace({
                 clientId: process.env.CLIENT_ID,
                 clientSecret: process.env.CLIENT_SECRET
@@ -369,15 +369,15 @@ test('WalmartMarketplace.items', async () => {
                 // HACK: In the sandbox environment, this endpoint always seems to return a 404
                 assert(err);
                 assert.strictEqual(err.cause.status, 404);
-                assert.strictEqual(err.message, 'Not Found');
+                assert.strictEqual(err.message, '404 Not Found');
                 assert.strictEqual(itemDetails, null);
                 done();
             });
         });
     });
 
-    await test('WalmartMarketplace.items.itemSearch(options)', async () => {
-        await test('should return json', async () => {
+    t.test('WalmartMarketplace.items.itemSearch(options)', { concurrency: true }, async (t) => {
+        t.test('should return json', async () => {
             let walmartMarketplace = new WalmartMarketplace({
                 clientId: process.env.CLIENT_ID,
                 clientSecret: process.env.CLIENT_SECRET
@@ -387,7 +387,7 @@ test('WalmartMarketplace.items', async () => {
             assert(searchResults);
         });
 
-        await test('should return an error for non 200 status code', async () => {
+        t.test('should return an error for non 200 status code', async () => {
             let walmartMarketplace = new WalmartMarketplace({
                 clientId: process.env.CLIENT_ID,
                 clientSecret: process.env.CLIENT_SECRET
@@ -412,13 +412,13 @@ test('WalmartMarketplace.items', async () => {
             } catch (err) {
                 assert(err);
                 assert.strictEqual(err.cause.status, 500);
-                assert.strictEqual(err.message, 'INTERNAL SERVER ERROR');
+                assert.strictEqual(err.message, '500 INTERNAL SERVER ERROR');
             }
         });
     });
 
-    await test('WalmartMarketplace.items.itemSearch(options, callback)', async () => {
-        await test('should return search results', function(t, done) {
+    t.test('WalmartMarketplace.items.itemSearch(options, callback)', { concurrency: true }, async (t) => {
+        t.test('should return search results', (t, done) => {
             const walmartMarketplace = new WalmartMarketplace({
                 clientId: process.env.CLIENT_ID,
                 clientSecret: process.env.CLIENT_SECRET
@@ -432,8 +432,8 @@ test('WalmartMarketplace.items', async () => {
         });
     });
 
-    await test('WalmartMarketplace.items.retireAnItem(sku, options)', async () => {
-        await test('should retire an item', async () => {
+    t.test('WalmartMarketplace.items.retireAnItem(sku, options)', { concurrency: true }, async (t) => {
+        t.test('should retire an item', async () => {
             const walmartMarketplace = new WalmartMarketplace({
                 clientId: process.env.CLIENT_ID,
                 clientSecret: process.env.CLIENT_SECRET
@@ -444,7 +444,7 @@ test('WalmartMarketplace.items', async () => {
             assert.strictEqual(response.sku, '123456');
         });
 
-        await test('should support options', async () => {
+        t.test('should support options', async () => {
             const walmartMarketplace = new WalmartMarketplace({
                 clientId: process.env.CLIENT_ID,
                 clientSecret: process.env.CLIENT_SECRET
@@ -455,7 +455,7 @@ test('WalmartMarketplace.items', async () => {
             assert.strictEqual(response.sku, '123456');
         });
 
-        await test('should throw an error for non 200 status code', async () => {
+        t.test('should throw an error for non 200 status code', async () => {
             let walmartMarketplace = new WalmartMarketplace({
                 clientId: process.env.CLIENT_ID,
                 clientSecret: process.env.CLIENT_SECRET
@@ -480,13 +480,13 @@ test('WalmartMarketplace.items', async () => {
             } catch (err) {
                 assert(err);
                 assert.strictEqual(err.cause.status, 500);
-                assert.strictEqual(err.message, 'INTERNAL SERVER ERROR');
+                assert.strictEqual(err.message, '500 INTERNAL SERVER ERROR');
             }
         });
     });
 
-    await test('WalmartMarketplace.items.retireAnItem(sku, options, callback)', async () => {
-        await test('should retire an item', function(t, done) {
+    t.test('WalmartMarketplace.items.retireAnItem(sku, options, callback)', { concurrency: true }, async (t) => {
+        t.test('should retire an item', (t, done) => {
             const walmartMarketplace = new WalmartMarketplace({
                 clientId: process.env.CLIENT_ID,
                 clientSecret: process.env.CLIENT_SECRET
@@ -501,7 +501,7 @@ test('WalmartMarketplace.items', async () => {
             });
         });
 
-        await test('should support options', function(t, done) {
+        t.test('should support options', (t, done) => {
             const walmartMarketplace = new WalmartMarketplace({
                 clientId: process.env.CLIENT_ID,
                 clientSecret: process.env.CLIENT_SECRET
@@ -518,9 +518,9 @@ test('WalmartMarketplace.items', async () => {
     });
 });
 
-test('WalmartMarketplace.orders', async () => {
-    await test('WalmartMarketplace.orders.acknowledgeOrder(purchaseOrderId, options)', async () => {
-        await test('should return json', async () => {
+test('WalmartMarketplace.orders', { concurrency: true }, async (t) => {
+    t.test('WalmartMarketplace.orders.acknowledgeOrder(purchaseOrderId, options)', { concurrency: true }, async (t) => {
+        t.test('should return json', async () => {
             const walmartMarketplace = new WalmartMarketplace({
                 clientId: process.env.CLIENT_ID,
                 clientSecret: process.env.CLIENT_SECRET
@@ -531,7 +531,7 @@ test('WalmartMarketplace.orders', async () => {
             assert.strictEqual(response.order[0].purchaseOrderId, '1796277083022');
         });
 
-        await test('should throw an error for non 200 status code', async () => {
+        t.test('should throw an error for non 200 status code', async () => {
             let walmartMarketplace = new WalmartMarketplace({
                 clientId: process.env.CLIENT_ID,
                 clientSecret: process.env.CLIENT_SECRET
@@ -556,13 +556,13 @@ test('WalmartMarketplace.orders', async () => {
             } catch (err) {
                 assert(err);
                 assert.strictEqual(err.cause.status, 500);
-                assert.strictEqual(err.message, 'INTERNAL SERVER ERROR');
+                assert.strictEqual(err.message, '500 INTERNAL SERVER ERROR');
             }
         });
     });
 
-    await test('WalmartMarketplace.orders.acknowledgeOrder(purchaseOrderId, options, callback)', async () => {
-        await test('should return json', async () => {
+    t.test('WalmartMarketplace.orders.acknowledgeOrder(purchaseOrderId, options, callback)', { concurrency: true }, async (t) => {
+        t.test('should return json', async () => {
             const walmartMarketplace = new WalmartMarketplace({
                 clientId: process.env.CLIENT_ID,
                 clientSecret: process.env.CLIENT_SECRET
@@ -575,8 +575,8 @@ test('WalmartMarketplace.orders', async () => {
         });
     });
 
-    await test('WalmartMarketplace.orders.getAllOrders(options)', async () => {
-        await test('should return json', async () => {
+    t.test('WalmartMarketplace.orders.getAllOrders(options)', { concurrency: true }, async (t) => {
+        t.test('should return json', async () => {
             let walmartMarketplace = new WalmartMarketplace({
                 clientId: process.env.CLIENT_ID,
                 clientSecret: process.env.CLIENT_SECRET
@@ -599,7 +599,7 @@ test('WalmartMarketplace.orders', async () => {
             assert(orders);
         });
 
-        await test('should throw an error for non 200 status code', async () => {
+        t.test('should throw an error for non 200 status code', async () => {
             let walmartMarketplace = new WalmartMarketplace({
                 clientId: process.env.CLIENT_ID,
                 clientSecret: process.env.CLIENT_SECRET
@@ -624,13 +624,13 @@ test('WalmartMarketplace.orders', async () => {
             } catch (err) {
                 assert(err);
                 assert.strictEqual(err.cause.status, 500);
-                assert.strictEqual(err.message, 'INTERNAL SERVER ERROR');
+                assert.strictEqual(err.message, '500 INTERNAL SERVER ERROR');
             }
         });
     });
 
-    await test('WalmartMarketplace.orders.getAllOrders(options, callback)', async () => {
-        await test('should return json', async () => {
+    t.test('WalmartMarketplace.orders.getAllOrders(options, callback)', { concurrency: true }, async (t) => {
+        t.test('should return json', async () => {
             let walmartMarketplace = new WalmartMarketplace({
                 clientId: process.env.CLIENT_ID,
                 clientSecret: process.env.CLIENT_SECRET
@@ -655,7 +655,7 @@ test('WalmartMarketplace.orders', async () => {
             });
         });
 
-        await test('should throw an error for non 200 status code', async () => {
+        t.test('should throw an error for non 200 status code', async () => {
             let walmartMarketplace = new WalmartMarketplace({
                 clientId: process.env.CLIENT_ID,
                 clientSecret: process.env.CLIENT_SECRET
@@ -680,13 +680,13 @@ test('WalmartMarketplace.orders', async () => {
             } catch (err) {
                 assert(err);
                 assert.strictEqual(err.cause.status, 500);
-                assert.strictEqual(err.message, 'INTERNAL SERVER ERROR');
+                assert.strictEqual(err.message, '500 INTERNAL SERVER ERROR');
             }
         });
     });
 
-    await test('WalmartMarketplace.orders.getAllReleasedOrders(options)', async () => {
-        await test('should return json', async () => {
+    t.test('WalmartMarketplace.orders.getAllReleasedOrders(options)', { concurrency: true }, async (t) => {
+        t.test('should return json', async () => {
             const walmartMarketplace = new WalmartMarketplace({
                 clientId: process.env.CLIENT_ID,
                 clientSecret: process.env.CLIENT_SECRET
@@ -697,8 +697,8 @@ test('WalmartMarketplace.orders', async () => {
         });
     });
 
-    await test('WalmartMarketplace.orders.getAllReleasedOrders(options, callback)', async () => {
-        await test('should return json', async () => {
+    t.test('WalmartMarketplace.orders.getAllReleasedOrders(options, callback)', { concurrency: true }, async (t) => {
+        t.test('should return json', async () => {
             const walmartMarketplace = new WalmartMarketplace({
                 clientId: process.env.CLIENT_ID,
                 clientSecret: process.env.CLIENT_SECRET
@@ -711,8 +711,8 @@ test('WalmartMarketplace.orders', async () => {
         });
     });
 
-    await test('WalmartMarketplace.orders.shipOrderLines(purchaseOrderId, orderShipment, options)', async () => {
-        await test('should return json', async () => {
+    t.test('WalmartMarketplace.orders.shipOrderLines(purchaseOrderId, orderShipment, options)', { concurrency: true }, async (t) => {
+        t.test('should return json', async () => {
             const walmartMarketplace = new WalmartMarketplace({
                 clientId: process.env.CLIENT_ID,
                 clientSecret: process.env.CLIENT_SECRET
@@ -802,7 +802,7 @@ test('WalmartMarketplace.orders', async () => {
             assert(response.order[0].orderLines.orderLine.every(orderLine => orderLine.orderLineStatuses.orderLineStatus.every(orderLineStatus => orderLineStatus.status === 'Shipped')));
         });
 
-        await test('should throw an error for non 200 status code', async () => {
+        t.test('should throw an error for non 200 status code', async () => {
             let walmartMarketplace = new WalmartMarketplace({
                 clientId: process.env.CLIENT_ID,
                 clientSecret: process.env.CLIENT_SECRET
@@ -905,13 +905,13 @@ test('WalmartMarketplace.orders', async () => {
             } catch (err) {
                 assert(err);
                 assert.strictEqual(err.cause.status, 500);
-                assert.strictEqual(err.message, 'INTERNAL SERVER ERROR');
+                assert.strictEqual(err.message, '500 INTERNAL SERVER ERROR');
             }
         });
     });
 
-    await test('WalmartMarketplace.orders.shipOrderLines(purchaseOrderId, orderShipment, options, callback)', async () => {
-        await test('should return json', function(t, done) {
+    t.test('WalmartMarketplace.orders.shipOrderLines(purchaseOrderId, orderShipment, options, callback)', { concurrency: true }, async (t) => {
+        t.test('should return json', (t, done) => {
             const walmartMarketplace = new WalmartMarketplace({
                 clientId: process.env.CLIENT_ID,
                 clientSecret: process.env.CLIENT_SECRET
@@ -1006,9 +1006,9 @@ test('WalmartMarketplace.orders', async () => {
     });
 });
 
-test('WalmartMarketplace.prices', async () => {
-    await test('WalmartMarketplace.prices.updatePrice(price, options)', async () => {
-        await test('should return json', async () => {
+test('WalmartMarketplace.prices', { concurrency: true }, async (t) => {
+    t.test('WalmartMarketplace.prices.updatePrice(price, options)', { concurrency: true }, async (t) => {
+        t.test('should return json', async () => {
             const walmartMarketplace = new WalmartMarketplace({
                 clientId: process.env.CLIENT_ID,
                 clientSecret: process.env.CLIENT_SECRET
@@ -1032,7 +1032,7 @@ test('WalmartMarketplace.prices', async () => {
             assert.strictEqual(response.ItemPriceResponse.sku, '97964_KFTest');
         });
 
-        await test('should throw an error for non 200 status code', async () => {
+        t.test('should throw an error for non 200 status code', async () => {
             let walmartMarketplace = new WalmartMarketplace({
                 clientId: process.env.CLIENT_ID,
                 clientSecret: process.env.CLIENT_SECRET
@@ -1070,13 +1070,13 @@ test('WalmartMarketplace.prices', async () => {
             } catch (err) {
                 assert(err);
                 assert.strictEqual(err.cause.status, 500);
-                assert.strictEqual(err.message, 'INTERNAL SERVER ERROR');
+                assert.strictEqual(err.message, '500 INTERNAL SERVER ERROR');
             }
         });
     });
 
-    await test('WalmartMarketplace.prices.updatePrice(price, options, callback)', async () => {
-        await test('should return json', function(t, done) {
+    t.test('WalmartMarketplace.prices.updatePrice(price, options, callback)', { concurrency: true }, async (t) => {
+        t.test('should return json', (t, done) => {
             const walmartMarketplace = new WalmartMarketplace({
                 clientId: process.env.CLIENT_ID,
                 clientSecret: process.env.CLIENT_SECRET
@@ -1106,13 +1106,13 @@ test('WalmartMarketplace.prices', async () => {
     });
 });
 
-test('WalmartMarketplace.authentication', async () => {
-    await test('WalmartMarketplace.authentication.getAccessToken(options)', async (t) => {
+test('WalmartMarketplace.authentication', { concurrency: true }, async (t) => {
+    t.test('WalmartMarketplace.authentication.getAccessToken(options)', { concurrency: true }, async (t) => {
         t.beforeEach(() => {
             cache.clear();
         });
 
-        await test('should support options', async () => {
+        t.test('should support options', async () => {
             const walmartMarketplace = new WalmartMarketplace({
                 clientId: process.env.CLIENT_ID,
                 clientSecret: process.env.CLIENT_SECRET
@@ -1122,7 +1122,7 @@ test('WalmartMarketplace.authentication', async () => {
             assert(accessToken);
         });
 
-        await test('should cache the access token', async () => {
+        t.test('should cache the access token', async () => {
             const walmartMarketplace = new WalmartMarketplace({
                 clientId: process.env.CLIENT_ID,
                 clientSecret: process.env.CLIENT_SECRET
@@ -1139,7 +1139,7 @@ test('WalmartMarketplace.authentication', async () => {
             assert.deepStrictEqual(accessToken1, accessToken2);
         });
 
-        await test('should return an error for invalid url', async () => {
+        t.test('should return an error for invalid url', async () => {
             const walmartMarketplace = new WalmartMarketplace({
                 url: 'invalid'
             });
@@ -1153,7 +1153,7 @@ test('WalmartMarketplace.authentication', async () => {
             }
         });
 
-        await test('should return an error for non 200 status code', async () => {
+        t.test('should return an error for non 200 status code', async () => {
             const walmartMarketplace = new WalmartMarketplace({
                 clientId: process.env.CLIENT_ID,
                 clientSecret: process.env.CLIENT_SECRET,
@@ -1166,17 +1166,17 @@ test('WalmartMarketplace.authentication', async () => {
             } catch (err) {
                 assert(err);
                 assert.strictEqual(err.cause.status, 500);
-                assert.strictEqual(err.message, 'INTERNAL SERVER ERROR');
+                assert.strictEqual(err.message, '500 INTERNAL SERVER ERROR');
             }
         });
     });
 
-    await test('WalmartMarketplace.authentication.getAccessToken(options, callback)', async (t) => {
+    t.test('WalmartMarketplace.authentication.getAccessToken(options, callback)', { concurrency: true }, async (t) => {
         t.beforeEach(() => {
             cache.clear();
         });
 
-        await test('should support options', function(t, done) {
+        t.test('should support options', (t, done) => {
             const walmartMarketplace = new WalmartMarketplace({
                 clientId: process.env.CLIENT_ID,
                 clientSecret: process.env.CLIENT_SECRET
@@ -1190,7 +1190,7 @@ test('WalmartMarketplace.authentication', async () => {
             });
         });
 
-        await test('should cache the access token', function(t, done) {
+        t.test('should cache the access token', (t, done) => {
             const walmartMarketplace = new WalmartMarketplace({
                 clientId: process.env.CLIENT_ID,
                 clientSecret: process.env.CLIENT_SECRET
@@ -1212,7 +1212,7 @@ test('WalmartMarketplace.authentication', async () => {
             });
         });
 
-        await test('should return an error for invalid url', function(t, done) {
+        t.test('should return an error for invalid url', (t, done) => {
             const walmartMarketplace = new WalmartMarketplace({
                 url: 'invalid'
             });
@@ -1226,7 +1226,7 @@ test('WalmartMarketplace.authentication', async () => {
             });
         });
 
-        await test('should return an error for non 200 status code', function(t, done) {
+        t.test('should return an error for non 200 status code', (t, done) => {
             const walmartMarketplace = new WalmartMarketplace({
                 clientId: process.env.CLIENT_ID,
                 clientSecret: process.env.CLIENT_SECRET,
@@ -1236,7 +1236,7 @@ test('WalmartMarketplace.authentication', async () => {
             walmartMarketplace.authentication.getAccessToken(function(err, accessToken) {
                 assert(err);
                 assert.strictEqual(err.cause.status, 500);
-                assert.strictEqual(err.message, 'INTERNAL SERVER ERROR');
+                assert.strictEqual(err.message, '500 INTERNAL SERVER ERROR');
                 assert.strictEqual(accessToken, null);
 
                 done();

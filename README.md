@@ -1,7 +1,7 @@
 # walmart-marketplace
 
 [![Build Status](https://github.com/stores-com/walmart-marketplace/actions/workflows/test.yml/badge.svg?branch=main)](https://github.com/stores-com/walmart-marketplace/actions/workflows/test.yml)
-[![Coverage Status](https://coveralls.io/repos/github/mediocre/walmart-marketplace/badge.svg?branch=main)](https://coveralls.io/github/mediocre/walmart-marketplace?branch=main)
+[![Coverage Status](https://coveralls.io/repos/github/stores-com/walmart-marketplace/badge.svg?branch=main)](https://coveralls.io/github/stores-com/walmart-marketplace?branch=main)
 
 
 The Walmart Marketplace APIs provide resources for sellers to manage their items, orders, prices, promotions, inventory and reports on Walmart.com.

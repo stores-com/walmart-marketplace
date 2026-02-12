@@ -1,9 +1,11 @@
-const crypto = require('crypto');
-const util = require('util');
+const crypto = require('node:crypto');
+const util = require('node:util');
 
 const { parse } = require('csv-parse');
 const JSZip = require('jszip');
 const cache = require('memory-cache');
+
+const HttpError = require('@stores.com/http-error');
 
 function finalize(err, data, callback) {
     // If a callback was provided, call it
@@ -83,7 +85,7 @@ function WalmartMarketplace(args) {
                 });
 
                 if (!response.ok) {
-                    return finalize(new Error(response.statusText, { cause: response }), null, callback);
+                    return finalize(await HttpError.from(response), null, callback);
                 }
 
                 // Parse the response
@@ -138,7 +140,7 @@ function WalmartMarketplace(args) {
                 });
 
                 if (!response.ok) {
-                    throw new Error(response.statusText, { cause: response });
+                    throw await HttpError.from(response);
                 }
 
                 return finalize(null, await response.json(), callback);
@@ -191,7 +193,7 @@ function WalmartMarketplace(args) {
                 });
 
                 if (!response.ok) {
-                    throw new Error(response.statusText, { cause: response });
+                    throw await HttpError.from(response);
                 }
 
                 return finalize(null, await response.json(), callback);
@@ -236,7 +238,7 @@ function WalmartMarketplace(args) {
                 });
 
                 if (!response.ok) {
-                    throw new Error(response.statusText, { cause: response });
+                    throw await HttpError.from(response);
                 }
 
                 return finalize(null, await response.json(), callback);
@@ -295,7 +297,7 @@ function WalmartMarketplace(args) {
                     });
 
                     if (!response.ok) {
-                        throw new Error(response.statusText, { cause: response });
+                        throw await HttpError.from(response);
                     }
 
                     const data = await response.json();
@@ -363,7 +365,7 @@ function WalmartMarketplace(args) {
                     });
 
                     if (!response.ok) {
-                        throw new Error(response.statusText, { cause: response });
+                        throw await HttpError.from(response);
                     }
 
                     const data = await response.json();
@@ -425,7 +427,7 @@ function WalmartMarketplace(args) {
                 });
 
                 if (!response.ok) {
-                    throw new Error(response.statusText, { cause: response });
+                    throw await HttpError.from(response);
                 }
 
                 return finalize(null, await response.json(), callback);
@@ -464,7 +466,7 @@ function WalmartMarketplace(args) {
                 });
 
                 if (!response.ok) {
-                    throw new Error(response.statusText, { cause: response });
+                    throw await HttpError.from(response);
                 }
 
                 return finalize(null, await response.json(), callback);
@@ -502,7 +504,7 @@ function WalmartMarketplace(args) {
                 });
 
                 if (!response.ok) {
-                    throw new Error(response.statusText, { cause: response });
+                    throw await HttpError.from(response);
                 }
 
                 return finalize(null, await response.json(), callback);
@@ -544,7 +546,7 @@ function WalmartMarketplace(args) {
                 });
 
                 if (!response.ok) {
-                    throw new Error(response.statusText, { cause: response });
+                    throw await HttpError.from(response);
                 }
 
                 return finalize(null, await response.json(), callback);
@@ -614,7 +616,7 @@ function WalmartMarketplace(args) {
                     });
 
                     if (!response.ok) {
-                        throw new Error(response.statusText, { cause: response });
+                        throw await HttpError.from(response);
                     }
 
                     const data = await response.json();
@@ -694,7 +696,7 @@ function WalmartMarketplace(args) {
                     });
 
                     if (!response.ok) {
-                        throw new Error(response.statusText, { cause: response });
+                        throw await HttpError.from(response);
                     }
 
                     const data = await response.json();
@@ -750,7 +752,7 @@ function WalmartMarketplace(args) {
                 });
 
                 if (!response.ok) {
-                    throw new Error(response.statusText, { cause: response });
+                    throw await HttpError.from(response);
                 }
 
                 return finalize(null, await response.json(), callback);
@@ -793,7 +795,7 @@ function WalmartMarketplace(args) {
                 });
 
                 if (!response.ok) {
-                    throw new Error(response.statusText, { cause: response });
+                    throw await HttpError.from(response);
                 }
 
                 return finalize(null, await response.json(), callback);
@@ -847,7 +849,7 @@ function WalmartMarketplace(args) {
                 });
 
                 if (!response.ok) {
-                    throw new Error(response.statusText, { cause: response });
+                    throw await HttpError.from(response);
                 }
 
                 return finalize(null, await response.json(), callback);
@@ -898,7 +900,7 @@ function WalmartMarketplace(args) {
                 });
 
                 if (!response.ok) {
-                    throw new Error(response.statusText, { cause: response });
+                    throw await HttpError.from(response);
                 }
 
                 return finalize(null, await response.json(), callback);
@@ -958,7 +960,7 @@ function WalmartMarketplace(args) {
                     });
 
                     if (!response.ok) {
-                        throw new Error(response.statusText, { cause: response });
+                        throw await HttpError.from(response);
                     }
 
                     const data = await response.json();
@@ -1009,7 +1011,7 @@ function WalmartMarketplace(args) {
                 });
 
                 if (!response.ok) {
-                    throw new Error(response.statusText, { cause: response });
+                    throw await HttpError.from(response);
                 }
 
                 return finalize(null, await response.json(), callback);
@@ -1051,7 +1053,7 @@ function WalmartMarketplace(args) {
                     });
 
                     if (!response.ok) {
-                        throw new Error(response.statusText, { cause: response });
+                        throw await HttpError.from(response);
                     }
 
                     const data = await response.json();
@@ -1103,7 +1105,7 @@ function WalmartMarketplace(args) {
                 });
 
                 if (!response.ok) {
-                    throw new Error(response.statusText, { cause: response });
+                    throw await HttpError.from(response);
                 }
 
                 return finalize(null, await response.json(), callback);

@@ -1,5 +1,5 @@
-.coveralls.yml
-.eslintrc.js
+.claude
 .github
-.nyc_output
+CLAUDE.md
+eslint.config.js
 test
