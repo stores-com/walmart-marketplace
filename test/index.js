@@ -29,13 +29,13 @@ test('WalmartMarketplace.inventory', { concurrency: true }, async (t) => {
             cache.clear();
             const accessToken = await walmartMarketplace.authentication.getAccessToken();
             const json = JSON.parse(cache.keys()[0]);
-            json.url = 'https://httpstat.us/500#';
+            json.url = 'https://httpbin.org/status/500#';
             cache.put(JSON.stringify(json), accessToken);
 
             walmartMarketplace = new WalmartMarketplace({
                 clientId: process.env.CLIENT_ID,
                 clientSecret: process.env.CLIENT_SECRET,
-                url: 'https://httpstat.us/500#'
+                url: 'https://httpbin.org/status/500#'
             });
 
             try {
@@ -121,13 +121,13 @@ test('WalmartMarketplace.inventory', { concurrency: true }, async (t) => {
             cache.clear();
             const accessToken = await walmartMarketplace.authentication.getAccessToken();
             const json = JSON.parse(cache.keys()[0]);
-            json.url = 'https://httpstat.us/500#';
+            json.url = 'https://httpbin.org/status/500#';
             cache.put(JSON.stringify(json), accessToken);
 
             walmartMarketplace = new WalmartMarketplace({
                 clientId: process.env.CLIENT_ID,
                 clientSecret: process.env.CLIENT_SECRET,
-                url: 'https://httpstat.us/500#'
+                url: 'https://httpbin.org/status/500#'
             });
 
             const inventory = {
@@ -231,13 +231,13 @@ test('WalmartMarketplace.items', { concurrency: true }, async (t) => {
             cache.clear();
             const accessToken = await walmartMarketplace.authentication.getAccessToken();
             const json = JSON.parse(cache.keys()[0]);
-            json.url = 'https://httpstat.us/500#';
+            json.url = 'https://httpbin.org/status/500#';
             cache.put(JSON.stringify(json), accessToken);
 
             walmartMarketplace = new WalmartMarketplace({
                 clientId: process.env.CLIENT_ID,
                 clientSecret: process.env.CLIENT_SECRET,
-                url: 'https://httpstat.us/500#'
+                url: 'https://httpbin.org/status/500#'
             });
 
             const mpItemMatch = {
@@ -338,13 +338,13 @@ test('WalmartMarketplace.items', { concurrency: true }, async (t) => {
             cache.clear();
             const accessToken = await walmartMarketplace.authentication.getAccessToken();
             const json = JSON.parse(cache.keys()[0]);
-            json.url = 'https://httpstat.us/500#';
+            json.url = 'https://httpbin.org/status/500#';
             cache.put(JSON.stringify(json), accessToken);
 
             walmartMarketplace = new WalmartMarketplace({
                 clientId: process.env.CLIENT_ID,
                 clientSecret: process.env.CLIENT_SECRET,
-                url: 'https://httpstat.us/500#'
+                url: 'https://httpbin.org/status/500#'
             });
 
             try {
@@ -397,13 +397,13 @@ test('WalmartMarketplace.items', { concurrency: true }, async (t) => {
             cache.clear();
             const accessToken = await walmartMarketplace.authentication.getAccessToken();
             const json = JSON.parse(cache.keys()[0]);
-            json.url = 'https://httpstat.us/500#';
+            json.url = 'https://httpbin.org/status/500#';
             cache.put(JSON.stringify(json), accessToken);
 
             walmartMarketplace = new WalmartMarketplace({
                 clientId: process.env.CLIENT_ID,
                 clientSecret: process.env.CLIENT_SECRET,
-                url: 'https://httpstat.us/500#'
+                url: 'https://httpbin.org/status/500#'
             });
 
             try {
@@ -465,13 +465,13 @@ test('WalmartMarketplace.items', { concurrency: true }, async (t) => {
             cache.clear();
             const accessToken = await walmartMarketplace.authentication.getAccessToken();
             const json = JSON.parse(cache.keys()[0]);
-            json.url = 'https://httpstat.us/500#';
+            json.url = 'https://httpbin.org/status/500#';
             cache.put(JSON.stringify(json), accessToken);
 
             walmartMarketplace = new WalmartMarketplace({
                 clientId: process.env.CLIENT_ID,
                 clientSecret: process.env.CLIENT_SECRET,
-                url: 'https://httpstat.us/500#'
+                url: 'https://httpbin.org/status/500#'
             });
 
             try {
@@ -538,13 +538,13 @@ test('WalmartMarketplace.items', { concurrency: true }, async (t) => {
             cache.clear();
             const accessToken = await walmartMarketplace.authentication.getAccessToken();
             const json = JSON.parse(cache.keys()[0]);
-            json.url = 'https://httpstat.us/500#';
+            json.url = 'https://httpbin.org/status/500#';
             cache.put(JSON.stringify(json), accessToken);
 
             walmartMarketplace = new WalmartMarketplace({
                 clientId: process.env.CLIENT_ID,
                 clientSecret: process.env.CLIENT_SECRET,
-                url: 'https://httpstat.us/500#'
+                url: 'https://httpbin.org/status/500#'
             });
 
             try {
@@ -595,13 +595,13 @@ test('WalmartMarketplace.items', { concurrency: true }, async (t) => {
             cache.clear();
             const accessToken = await walmartMarketplace.authentication.getAccessToken();
             const json = JSON.parse(cache.keys()[0]);
-            json.url = 'https://httpstat.us/500#';
+            json.url = 'https://httpbin.org/status/500#';
             cache.put(JSON.stringify(json), accessToken);
 
             walmartMarketplace = new WalmartMarketplace({
                 clientId: process.env.CLIENT_ID,
                 clientSecret: process.env.CLIENT_SECRET,
-                url: 'https://httpstat.us/500#'
+                url: 'https://httpbin.org/status/500#'
             });
 
             try {
@@ -667,13 +667,13 @@ test('WalmartMarketplace.orders', { concurrency: true }, async (t) => {
             cache.clear();
             const accessToken = await walmartMarketplace.authentication.getAccessToken();
             const json = JSON.parse(cache.keys()[0]);
-            json.url = 'https://httpstat.us/500#';
+            json.url = 'https://httpbin.org/status/500#';
             cache.put(JSON.stringify(json), accessToken);
 
             walmartMarketplace = new WalmartMarketplace({
                 clientId: process.env.CLIENT_ID,
                 clientSecret: process.env.CLIENT_SECRET,
-                url: 'https://httpstat.us/500#'
+                url: 'https://httpbin.org/status/500#'
             });
 
             try {
@@ -735,13 +735,13 @@ test('WalmartMarketplace.orders', { concurrency: true }, async (t) => {
             cache.clear();
             const accessToken = await walmartMarketplace.authentication.getAccessToken();
             const json = JSON.parse(cache.keys()[0]);
-            json.url = 'https://httpstat.us/500#';
+            json.url = 'https://httpbin.org/status/500#';
             cache.put(JSON.stringify(json), accessToken);
 
             walmartMarketplace = new WalmartMarketplace({
                 clientId: process.env.CLIENT_ID,
                 clientSecret: process.env.CLIENT_SECRET,
-                url: 'https://httpstat.us/500#'
+                url: 'https://httpbin.org/status/500#'
             });
 
             try {
@@ -803,13 +803,13 @@ test('WalmartMarketplace.orders', { concurrency: true }, async (t) => {
             cache.clear();
             const accessToken = await walmartMarketplace.authentication.getAccessToken();
             const json = JSON.parse(cache.keys()[0]);
-            json.url = 'https://httpstat.us/500#';
+            json.url = 'https://httpbin.org/status/500#';
             cache.put(JSON.stringify(json), accessToken);
 
             walmartMarketplace = new WalmartMarketplace({
                 clientId: process.env.CLIENT_ID,
                 clientSecret: process.env.CLIENT_SECRET,
-                url: 'https://httpstat.us/500#'
+                url: 'https://httpbin.org/status/500#'
             });
 
             try {
@@ -950,13 +950,13 @@ test('WalmartMarketplace.orders', { concurrency: true }, async (t) => {
             cache.clear();
             const accessToken = await walmartMarketplace.authentication.getAccessToken();
             const json = JSON.parse(cache.keys()[0]);
-            json.url = 'https://httpstat.us/500#';
+            json.url = 'https://httpbin.org/status/500#';
             cache.put(JSON.stringify(json), accessToken);
 
             walmartMarketplace = new WalmartMarketplace({
                 clientId: process.env.CLIENT_ID,
                 clientSecret: process.env.CLIENT_SECRET,
-                url: 'https://httpstat.us/500#'
+                url: 'https://httpbin.org/status/500#'
             });
 
             try {
@@ -1180,13 +1180,13 @@ test('WalmartMarketplace.prices', { concurrency: true }, async (t) => {
             cache.clear();
             const accessToken = await walmartMarketplace.authentication.getAccessToken();
             const json = JSON.parse(cache.keys()[0]);
-            json.url = 'https://httpstat.us/500#';
+            json.url = 'https://httpbin.org/status/500#';
             cache.put(JSON.stringify(json), accessToken);
 
             walmartMarketplace = new WalmartMarketplace({
                 clientId: process.env.CLIENT_ID,
                 clientSecret: process.env.CLIENT_SECRET,
-                url: 'https://httpstat.us/500#'
+                url: 'https://httpbin.org/status/500#'
             });
 
             try {
@@ -1256,13 +1256,13 @@ test('WalmartMarketplace.reports', async (t) => {
             cache.clear();
             const accessToken = await walmartMarketplace.authentication.getAccessToken();
             const json = JSON.parse(cache.keys()[0]);
-            json.url = 'https://httpstat.us/500#';
+            json.url = 'https://httpbin.org/status/500#';
             cache.put(JSON.stringify(json), accessToken);
 
             walmartMarketplace = new WalmartMarketplace({
                 clientId: process.env.CLIENT_ID,
                 clientSecret: process.env.CLIENT_SECRET,
-                url: 'https://httpstat.us/500#'
+                url: 'https://httpbin.org/status/500#'
             });
 
             try {
@@ -1287,13 +1287,13 @@ test('WalmartMarketplace.reports', async (t) => {
             cache.clear();
             const accessToken = await walmartMarketplace.authentication.getAccessToken();
             const json = JSON.parse(cache.keys()[0]);
-            json.url = 'https://httpstat.us/500#';
+            json.url = 'https://httpbin.org/status/500#';
             cache.put(JSON.stringify(json), accessToken);
 
             walmartMarketplace = new WalmartMarketplace({
                 clientId: process.env.CLIENT_ID,
                 clientSecret: process.env.CLIENT_SECRET,
-                url: 'https://httpstat.us/500#'
+                url: 'https://httpbin.org/status/500#'
             });
 
             try {
@@ -1328,13 +1328,13 @@ test('WalmartMarketplace.reports', async (t) => {
             cache.clear();
             const accessToken = await walmartMarketplace.authentication.getAccessToken();
             const json = JSON.parse(cache.keys()[0]);
-            json.url = 'https://httpstat.us/500#';
+            json.url = 'https://httpbin.org/status/500#';
             cache.put(JSON.stringify(json), accessToken);
 
             walmartMarketplace = new WalmartMarketplace({
                 clientId: process.env.CLIENT_ID,
                 clientSecret: process.env.CLIENT_SECRET,
-                url: 'https://httpstat.us/500#'
+                url: 'https://httpbin.org/status/500#'
             });
 
             try {
@@ -1385,13 +1385,13 @@ test('WalmartMarketplace.reports', async (t) => {
             cache.clear();
             const accessToken = await walmartMarketplace.authentication.getAccessToken();
             const json = JSON.parse(cache.keys()[0]);
-            json.url = 'https://httpstat.us/500#';
+            json.url = 'https://httpbin.org/status/500#';
             cache.put(JSON.stringify(json), accessToken);
 
             walmartMarketplace = new WalmartMarketplace({
                 clientId: process.env.CLIENT_ID,
                 clientSecret: process.env.CLIENT_SECRET,
-                url: 'https://httpstat.us/500#'
+                url: 'https://httpbin.org/status/500#'
             });
 
             try {
@@ -1446,13 +1446,13 @@ test('WalmartMarketplace.reports', async (t) => {
             cache.clear();
             const accessToken = await walmartMarketplace.authentication.getAccessToken();
             const json = JSON.parse(cache.keys()[0]);
-            json.url = 'https://httpstat.us/500#';
+            json.url = 'https://httpbin.org/status/500#';
             cache.put(JSON.stringify(json), accessToken);
 
             walmartMarketplace = new WalmartMarketplace({
                 clientId: process.env.CLIENT_ID,
                 clientSecret: process.env.CLIENT_SECRET,
-                url: 'https://httpstat.us/500#'
+                url: 'https://httpbin.org/status/500#'
             });
 
             try {
@@ -1492,7 +1492,7 @@ test('WalmartMarketplace.reports', async (t) => {
             let walmartMarketplace = new WalmartMarketplace({
                 clientId: process.env.CLIENT_ID,
                 clientSecret: process.env.CLIENT_SECRET,
-                url: 'https://httpstat.us/500#'
+                url: 'https://httpbin.org/status/500#'
             });
 
             walmartMarketplace.reports.downloadReportUrl('test-request-id', function(err, response) {
@@ -1529,13 +1529,13 @@ test('WalmartMarketplace.reports', async (t) => {
             cache.clear();
             const accessToken = await walmartMarketplace.authentication.getAccessToken();
             const json = JSON.parse(cache.keys()[0]);
-            json.url = 'https://httpstat.us/500#';
+            json.url = 'https://httpbin.org/status/500#';
             cache.put(JSON.stringify(json), accessToken);
 
             walmartMarketplace = new WalmartMarketplace({
                 clientId: process.env.CLIENT_ID,
                 clientSecret: process.env.CLIENT_SECRET,
-                url: 'https://httpstat.us/500#'
+                url: 'https://httpbin.org/status/500#'
             });
 
             try {
@@ -1601,7 +1601,7 @@ test('WalmartMarketplace.authentication', { concurrency: true }, async (t) => {
             const walmartMarketplace = new WalmartMarketplace({
                 clientId: process.env.CLIENT_ID,
                 clientSecret: process.env.CLIENT_SECRET,
-                url: 'https://httpstat.us/500#'
+                url: 'https://httpbin.org/status/500#'
             });
 
             try {
@@ -1674,7 +1674,7 @@ test('WalmartMarketplace.authentication', { concurrency: true }, async (t) => {
             const walmartMarketplace = new WalmartMarketplace({
                 clientId: process.env.CLIENT_ID,
                 clientSecret: process.env.CLIENT_SECRET,
-                url: 'https://httpstat.us/500#'
+                url: 'https://httpbin.org/status/500#'
             });
 
             walmartMarketplace.authentication.getAccessToken(function(err, accessToken) {
