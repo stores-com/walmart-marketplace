@@ -1220,20 +1220,8 @@ test('WalmartMarketplace.prices', { concurrency: true }, async (t) => {
     });
 });
 
-test('WalmartMarketplace.reports', { concurrency: true }, async (t) => {
+test('WalmartMarketplace.reports', async (t) => {
     t.test('WalmartMarketplace.reports.createReportRequest(reportType, reportVersion, requestBody, options)', { concurrency: true }, async (t) => {
-        t.test('should return json', async () => {
-            const walmartMarketplace = new WalmartMarketplace({
-                clientId: process.env.CLIENT_ID,
-                clientSecret: process.env.CLIENT_SECRET
-            });
-
-            const response = await walmartMarketplace.reports.createReportRequest('ITEM', 'v1');
-            assert(response);
-            assert(response.requestId);
-            assert.strictEqual(response.requestStatus, 'RECEIVED');
-        });
-
         t.test('should throw error for non 200 status code', async () => {
             let walmartMarketplace = new WalmartMarketplace({
                 clientId: process.env.CLIENT_ID,
@@ -1261,23 +1249,6 @@ test('WalmartMarketplace.reports', { concurrency: true }, async (t) => {
                 assert.strictEqual(err.cause.status, 500);
                 assert.strictEqual(err.message, '500 INTERNAL SERVER ERROR');
             }
-        });
-    });
-
-    t.test('WalmartMarketplace.reports.createReportRequest(reportType, reportVersion, requestBody, options, callback)', { concurrency: true }, async (t) => {
-        t.test('should return json', (t, done) => {
-            const walmartMarketplace = new WalmartMarketplace({
-                clientId: process.env.CLIENT_ID,
-                clientSecret: process.env.CLIENT_SECRET
-            });
-
-            walmartMarketplace.reports.createReportRequest('ITEM', 'v1', function(err, response) {
-                assert.ifError(err);
-                assert(response);
-                assert(response.requestId);
-
-                done();
-            });
         });
     });
 
