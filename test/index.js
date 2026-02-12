@@ -615,6 +615,18 @@ test('WalmartMarketplace.items', { concurrency: true }, async (t) => {
         });
     });
 
+    t.test('WalmartMarketplace.items.getAllItems(options) with autoPagination', { concurrency: true }, async (t) => {
+        t.test('should return all items', async () => {
+            const walmartMarketplace = new WalmartMarketplace({
+                clientId: process.env.CLIENT_ID,
+                clientSecret: process.env.CLIENT_SECRET
+            });
+
+            const items = await walmartMarketplace.items.getAllItems({ autoPagination: true, limit: 1 });
+            assert(Array.isArray(items));
+        });
+    });
+
     t.test('WalmartMarketplace.items.getAllItems(options, callback)', { concurrency: true }, async (t) => {
         t.test('should return an array', (t, done) => {
             const walmartMarketplace = new WalmartMarketplace({
@@ -740,6 +752,18 @@ test('WalmartMarketplace.orders', { concurrency: true }, async (t) => {
                 assert.strictEqual(err.cause.status, 500);
                 assert.strictEqual(err.message, '500 INTERNAL SERVER ERROR');
             }
+        });
+    });
+
+    t.test('WalmartMarketplace.orders.getAllOrders(options) with autoPagination', { concurrency: true }, async (t) => {
+        t.test('should return all orders', async () => {
+            const walmartMarketplace = new WalmartMarketplace({
+                clientId: process.env.CLIENT_ID,
+                clientSecret: process.env.CLIENT_SECRET
+            });
+
+            const orders = await walmartMarketplace.orders.getAllOrders({ autoPagination: true, limit: '1' });
+            assert(Array.isArray(orders));
         });
     });
 
@@ -1398,6 +1422,20 @@ test('WalmartMarketplace.reports', async (t) => {
     });
 
     t.test('WalmartMarketplace.reports.reportRequestStatus(requestId, options)', { concurrency: true }, async (t) => {
+        t.test('should return json', async () => {
+            const walmartMarketplace = new WalmartMarketplace({
+                clientId: process.env.CLIENT_ID,
+                clientSecret: process.env.CLIENT_SECRET
+            });
+
+            const reportRequests = await walmartMarketplace.reports.getAllReportRequests('ITEM');
+            assert(reportRequests.length > 0);
+
+            const response = await walmartMarketplace.reports.reportRequestStatus(reportRequests[0].requestId);
+            assert(response);
+            assert(response.requestId);
+        });
+
         t.test('should throw error for non 200 status code', async () => {
             let walmartMarketplace = new WalmartMarketplace({
                 clientId: process.env.CLIENT_ID,
@@ -1419,6 +1457,89 @@ test('WalmartMarketplace.reports', async (t) => {
 
             try {
                 await walmartMarketplace.reports.reportRequestStatus('test-request-id');
+                assert.fail('Expected an error to be thrown');
+            } catch (err) {
+                assert(err);
+                assert.strictEqual(err.cause.status, 500);
+                assert.strictEqual(err.message, '500 INTERNAL SERVER ERROR');
+            }
+        });
+    });
+
+    t.test('WalmartMarketplace.reports.reportRequestStatus(requestId, options, callback)', { concurrency: true }, async (t) => {
+        t.test('should return json', (t, done) => {
+            const walmartMarketplace = new WalmartMarketplace({
+                clientId: process.env.CLIENT_ID,
+                clientSecret: process.env.CLIENT_SECRET
+            });
+
+            walmartMarketplace.reports.getAllReportRequests('ITEM', function(err, reportRequests) {
+                assert.ifError(err);
+
+                walmartMarketplace.reports.reportRequestStatus(reportRequests[0].requestId, function(err, response) {
+                    assert.ifError(err);
+                    assert(response);
+                    assert(response.requestId);
+
+                    done();
+                });
+            });
+        });
+    });
+
+    t.test('WalmartMarketplace.reports.downloadReportUrl(requestId, options, callback)', { concurrency: true }, async (t) => {
+        t.test('should throw error for non 200 status code', (t, done) => {
+            let walmartMarketplace = new WalmartMarketplace({
+                clientId: process.env.CLIENT_ID,
+                clientSecret: process.env.CLIENT_SECRET,
+                url: 'https://httpbin.org/status/500#'
+            });
+
+            walmartMarketplace.reports.downloadReportUrl('test-request-id', function(err, response) {
+                assert(err);
+                assert.strictEqual(response, null);
+
+                done();
+            });
+        });
+    });
+
+    t.test('WalmartMarketplace.reports.getReconciliationReport(reportDate, options)', { concurrency: true }, async (t) => {
+        t.test('should return an array', async () => {
+            const walmartMarketplace = new WalmartMarketplace({
+                clientId: process.env.CLIENT_ID,
+                clientSecret: process.env.CLIENT_SECRET
+            });
+
+            const dates = await walmartMarketplace.reports.getAvailableReconciliationReportDates();
+
+            if (Array.isArray(dates?.availableApReportDates) && dates.availableApReportDates.length > 0) {
+                const reportData = await walmartMarketplace.reports.getReconciliationReport(dates.availableApReportDates[0]);
+                assert(Array.isArray(reportData));
+            }
+        });
+
+        t.test('should throw error for non 200 status code', async () => {
+            let walmartMarketplace = new WalmartMarketplace({
+                clientId: process.env.CLIENT_ID,
+                clientSecret: process.env.CLIENT_SECRET
+            });
+
+            // HACK: The following code adds an access token to the cache for a different environment
+            cache.clear();
+            const accessToken = await walmartMarketplace.authentication.getAccessToken();
+            const json = JSON.parse(cache.keys()[0]);
+            json.url = 'https://httpbin.org/status/500#';
+            cache.put(JSON.stringify(json), accessToken);
+
+            walmartMarketplace = new WalmartMarketplace({
+                clientId: process.env.CLIENT_ID,
+                clientSecret: process.env.CLIENT_SECRET,
+                url: 'https://httpbin.org/status/500#'
+            });
+
+            try {
+                await walmartMarketplace.reports.getReconciliationReport('2026-01-01');
                 assert.fail('Expected an error to be thrown');
             } catch (err) {
                 assert(err);
