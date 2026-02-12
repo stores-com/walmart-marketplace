@@ -1,7 +1,6 @@
 const crypto = require('node:crypto');
-const util = require('node:util');
 
-const { parse } = require('csv-parse');
+const csvParse = require('csv-parse/sync');
 const JSZip = require('jszip');
 const cache = require('memory-cache');
 
@@ -863,7 +862,7 @@ function WalmartMarketplace(args) {
                 const zip = await JSZip.loadAsync(response.arrayBuffer());
                 const file = await zip.file(Object.keys(zip.files)[0]);
                 const csv = await file.async('string');
-                const data = await util.promisify(parse)(csv, { columns: true });
+                const data = csvParse.parse(csv, { columns: true });
 
                 return finalize(null, data, callback);
             } catch(err) {
