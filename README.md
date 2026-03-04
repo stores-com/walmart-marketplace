@@ -1,7 +1,7 @@
 # walmart-marketplace
 
 [![Build Status](https://github.com/stores-com/walmart-marketplace/actions/workflows/test.yml/badge.svg?branch=main)](https://github.com/stores-com/walmart-marketplace/actions/workflows/test.yml)
-[![Coverage Status](https://coveralls.io/repos/github/stores-com/walmart-marketplace/badge.svg?branch=main)](https://coveralls.io/github/stores-com/walmart-marketplace?branch=main)
+[![Coverage Status](https://coveralls.io/repos/github/stores-com/walmart-marketplace/badge.svg?branch=main&t=Wm9u7D)](https://coveralls.io/github/stores-com/walmart-marketplace?branch=main)
 [![npm version](https://img.shields.io/npm/v/@stores.com/walmart-marketplace)](https://www.npmjs.com/package/@stores.com/walmart-marketplace)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
