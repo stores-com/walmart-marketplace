@@ -6,8 +6,8 @@
         "memory-cache": "~0.2.0"
     },
     "devDependencies": {
-        "@eslint/js": "*",
-        "globals": "*"
+        "@eslint/js": "~10.0.1",
+        "globals": "~17.6.0"
     },
     "license": "MIT",
     "name": "@stores.com/walmart-marketplace",
