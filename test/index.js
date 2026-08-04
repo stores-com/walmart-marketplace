@@ -30,13 +30,13 @@ test('WalmartMarketplace', { concurrency: true }, async (t) => {
                 cache.clear();
                 const accessToken = await walmartMarketplace.authentication.getAccessToken();
                 const json = JSON.parse(cache.keys()[0]);
-                json.url = 'https://httpbin.org/status/500#';
+                json.url = 'https://httpbingo.org/status/500#';
                 cache.put(JSON.stringify(json), accessToken);
 
                 walmartMarketplace = new WalmartMarketplace({
                     clientId: process.env.CLIENT_ID,
                     clientSecret: process.env.CLIENT_SECRET,
-                    url: 'https://httpbin.org/status/500#'
+                    url: 'https://httpbingo.org/status/500#'
                 });
 
                 try {
@@ -91,13 +91,13 @@ test('WalmartMarketplace', { concurrency: true }, async (t) => {
                 cache.clear();
                 const accessToken = await walmartMarketplace.authentication.getAccessToken();
                 const json = JSON.parse(cache.keys()[0]);
-                json.url = 'https://httpbin.org/anything#';
+                json.url = 'https://httpbingo.org/anything#';
                 cache.put(JSON.stringify(json), accessToken);
 
                 walmartMarketplace = new WalmartMarketplace({
                     clientId: process.env.CLIENT_ID,
                     clientSecret: process.env.CLIENT_SECRET,
-                    url: 'https://httpbin.org/anything#'
+                    url: 'https://httpbingo.org/anything#'
                 });
 
                 const inventory = {
@@ -122,13 +122,13 @@ test('WalmartMarketplace', { concurrency: true }, async (t) => {
                 cache.clear();
                 const accessToken = await walmartMarketplace.authentication.getAccessToken();
                 const json = JSON.parse(cache.keys()[0]);
-                json.url = 'https://httpbin.org/status/500#';
+                json.url = 'https://httpbingo.org/status/500#';
                 cache.put(JSON.stringify(json), accessToken);
 
                 walmartMarketplace = new WalmartMarketplace({
                     clientId: process.env.CLIENT_ID,
                     clientSecret: process.env.CLIENT_SECRET,
-                    url: 'https://httpbin.org/status/500#'
+                    url: 'https://httpbingo.org/status/500#'
                 });
 
                 const inventory = {
@@ -189,13 +189,13 @@ test('WalmartMarketplace', { concurrency: true }, async (t) => {
                 cache.clear();
                 const accessToken = await walmartMarketplace.authentication.getAccessToken();
                 const json = JSON.parse(cache.keys()[0]);
-                json.url = 'https://httpbin.org/post#';
+                json.url = 'https://httpbingo.org/post#';
                 cache.put(JSON.stringify(json), accessToken);
 
                 walmartMarketplace = new WalmartMarketplace({
                     clientId: process.env.CLIENT_ID,
                     clientSecret: process.env.CLIENT_SECRET,
-                    url: 'https://httpbin.org/post#'
+                    url: 'https://httpbingo.org/post#'
                 });
 
                 const mpItemMatch = {
@@ -232,13 +232,13 @@ test('WalmartMarketplace', { concurrency: true }, async (t) => {
                 cache.clear();
                 const accessToken = await walmartMarketplace.authentication.getAccessToken();
                 const json = JSON.parse(cache.keys()[0]);
-                json.url = 'https://httpbin.org/status/500#';
+                json.url = 'https://httpbingo.org/status/500#';
                 cache.put(JSON.stringify(json), accessToken);
 
                 walmartMarketplace = new WalmartMarketplace({
                     clientId: process.env.CLIENT_ID,
                     clientSecret: process.env.CLIENT_SECRET,
-                    url: 'https://httpbin.org/status/500#'
+                    url: 'https://httpbingo.org/status/500#'
                 });
 
                 const mpItemMatch = {
@@ -316,13 +316,13 @@ test('WalmartMarketplace', { concurrency: true }, async (t) => {
                 cache.clear();
                 const accessToken = await walmartMarketplace.authentication.getAccessToken();
                 const json = JSON.parse(cache.keys()[0]);
-                json.url = 'https://httpbin.org/json#';
+                json.url = 'https://httpbingo.org/json#';
                 cache.put(JSON.stringify(json), accessToken);
 
                 walmartMarketplace = new WalmartMarketplace({
                     clientId: process.env.CLIENT_ID,
                     clientSecret: process.env.CLIENT_SECRET,
-                    url: 'https://httpbin.org/json#'
+                    url: 'https://httpbingo.org/json#'
                 });
 
                 const itemDetails = await walmartMarketplace.items.getAnItem('30348_KFTest', { condition: 'New' });
@@ -339,13 +339,13 @@ test('WalmartMarketplace', { concurrency: true }, async (t) => {
                 cache.clear();
                 const accessToken = await walmartMarketplace.authentication.getAccessToken();
                 const json = JSON.parse(cache.keys()[0]);
-                json.url = 'https://httpbin.org/status/500#';
+                json.url = 'https://httpbingo.org/status/500#';
                 cache.put(JSON.stringify(json), accessToken);
 
                 walmartMarketplace = new WalmartMarketplace({
                     clientId: process.env.CLIENT_ID,
                     clientSecret: process.env.CLIENT_SECRET,
-                    url: 'https://httpbin.org/status/500#'
+                    url: 'https://httpbingo.org/status/500#'
                 });
 
                 try {
@@ -398,13 +398,13 @@ test('WalmartMarketplace', { concurrency: true }, async (t) => {
                 cache.clear();
                 const accessToken = await walmartMarketplace.authentication.getAccessToken();
                 const json = JSON.parse(cache.keys()[0]);
-                json.url = 'https://httpbin.org/status/500#';
+                json.url = 'https://httpbingo.org/status/500#';
                 cache.put(JSON.stringify(json), accessToken);
 
                 walmartMarketplace = new WalmartMarketplace({
                     clientId: process.env.CLIENT_ID,
                     clientSecret: process.env.CLIENT_SECRET,
-                    url: 'https://httpbin.org/status/500#'
+                    url: 'https://httpbingo.org/status/500#'
                 });
 
                 try {
@@ -466,13 +466,13 @@ test('WalmartMarketplace', { concurrency: true }, async (t) => {
                 cache.clear();
                 const accessToken = await walmartMarketplace.authentication.getAccessToken();
                 const json = JSON.parse(cache.keys()[0]);
-                json.url = 'https://httpbin.org/status/500#';
+                json.url = 'https://httpbingo.org/status/500#';
                 cache.put(JSON.stringify(json), accessToken);
 
                 walmartMarketplace = new WalmartMarketplace({
                     clientId: process.env.CLIENT_ID,
                     clientSecret: process.env.CLIENT_SECRET,
-                    url: 'https://httpbin.org/status/500#'
+                    url: 'https://httpbingo.org/status/500#'
                 });
 
                 try {
@@ -539,13 +539,13 @@ test('WalmartMarketplace', { concurrency: true }, async (t) => {
                 cache.clear();
                 const accessToken = await walmartMarketplace.authentication.getAccessToken();
                 const json = JSON.parse(cache.keys()[0]);
-                json.url = 'https://httpbin.org/status/500#';
+                json.url = 'https://httpbingo.org/status/500#';
                 cache.put(JSON.stringify(json), accessToken);
 
                 walmartMarketplace = new WalmartMarketplace({
                     clientId: process.env.CLIENT_ID,
                     clientSecret: process.env.CLIENT_SECRET,
-                    url: 'https://httpbin.org/status/500#'
+                    url: 'https://httpbingo.org/status/500#'
                 });
 
                 try {
@@ -596,13 +596,13 @@ test('WalmartMarketplace', { concurrency: true }, async (t) => {
                 cache.clear();
                 const accessToken = await walmartMarketplace.authentication.getAccessToken();
                 const json = JSON.parse(cache.keys()[0]);
-                json.url = 'https://httpbin.org/status/500#';
+                json.url = 'https://httpbingo.org/status/500#';
                 cache.put(JSON.stringify(json), accessToken);
 
                 walmartMarketplace = new WalmartMarketplace({
                     clientId: process.env.CLIENT_ID,
                     clientSecret: process.env.CLIENT_SECRET,
-                    url: 'https://httpbin.org/status/500#'
+                    url: 'https://httpbingo.org/status/500#'
                 });
 
                 try {
@@ -668,13 +668,13 @@ test('WalmartMarketplace', { concurrency: true }, async (t) => {
                 cache.clear();
                 const accessToken = await walmartMarketplace.authentication.getAccessToken();
                 const json = JSON.parse(cache.keys()[0]);
-                json.url = 'https://httpbin.org/status/500#';
+                json.url = 'https://httpbingo.org/status/500#';
                 cache.put(JSON.stringify(json), accessToken);
 
                 walmartMarketplace = new WalmartMarketplace({
                     clientId: process.env.CLIENT_ID,
                     clientSecret: process.env.CLIENT_SECRET,
-                    url: 'https://httpbin.org/status/500#'
+                    url: 'https://httpbingo.org/status/500#'
                 });
 
                 try {
@@ -713,13 +713,13 @@ test('WalmartMarketplace', { concurrency: true }, async (t) => {
                 cache.clear();
                 const accessToken = await walmartMarketplace.authentication.getAccessToken();
                 const json = JSON.parse(cache.keys()[0]);
-                json.url = 'https://httpbin.org/json#';
+                json.url = 'https://httpbingo.org/json#';
                 cache.put(JSON.stringify(json), accessToken);
 
                 walmartMarketplace = new WalmartMarketplace({
                     clientId: process.env.CLIENT_ID,
                     clientSecret: process.env.CLIENT_SECRET,
-                    url: 'https://httpbin.org/json#'
+                    url: 'https://httpbingo.org/json#'
                 });
 
                 const orders = await walmartMarketplace.orders.getAllOrders();
@@ -736,13 +736,13 @@ test('WalmartMarketplace', { concurrency: true }, async (t) => {
                 cache.clear();
                 const accessToken = await walmartMarketplace.authentication.getAccessToken();
                 const json = JSON.parse(cache.keys()[0]);
-                json.url = 'https://httpbin.org/status/500#';
+                json.url = 'https://httpbingo.org/status/500#';
                 cache.put(JSON.stringify(json), accessToken);
 
                 walmartMarketplace = new WalmartMarketplace({
                     clientId: process.env.CLIENT_ID,
                     clientSecret: process.env.CLIENT_SECRET,
-                    url: 'https://httpbin.org/status/500#'
+                    url: 'https://httpbingo.org/status/500#'
                 });
 
                 try {
@@ -779,13 +779,13 @@ test('WalmartMarketplace', { concurrency: true }, async (t) => {
                 cache.clear();
                 const accessToken = await walmartMarketplace.authentication.getAccessToken();
                 const json = JSON.parse(cache.keys()[0]);
-                json.url = 'https://httpbin.org/json#';
+                json.url = 'https://httpbingo.org/json#';
                 cache.put(JSON.stringify(json), accessToken);
 
                 walmartMarketplace = new WalmartMarketplace({
                     clientId: process.env.CLIENT_ID,
                     clientSecret: process.env.CLIENT_SECRET,
-                    url: 'https://httpbin.org/json#'
+                    url: 'https://httpbingo.org/json#'
                 });
 
                 walmartMarketplace.orders.getAllOrders(function(err, orders) {
@@ -804,13 +804,13 @@ test('WalmartMarketplace', { concurrency: true }, async (t) => {
                 cache.clear();
                 const accessToken = await walmartMarketplace.authentication.getAccessToken();
                 const json = JSON.parse(cache.keys()[0]);
-                json.url = 'https://httpbin.org/status/500#';
+                json.url = 'https://httpbingo.org/status/500#';
                 cache.put(JSON.stringify(json), accessToken);
 
                 walmartMarketplace = new WalmartMarketplace({
                     clientId: process.env.CLIENT_ID,
                     clientSecret: process.env.CLIENT_SECRET,
-                    url: 'https://httpbin.org/status/500#'
+                    url: 'https://httpbingo.org/status/500#'
                 });
 
                 try {
@@ -951,13 +951,13 @@ test('WalmartMarketplace', { concurrency: true }, async (t) => {
                 cache.clear();
                 const accessToken = await walmartMarketplace.authentication.getAccessToken();
                 const json = JSON.parse(cache.keys()[0]);
-                json.url = 'https://httpbin.org/status/500#';
+                json.url = 'https://httpbingo.org/status/500#';
                 cache.put(JSON.stringify(json), accessToken);
 
                 walmartMarketplace = new WalmartMarketplace({
                     clientId: process.env.CLIENT_ID,
                     clientSecret: process.env.CLIENT_SECRET,
-                    url: 'https://httpbin.org/status/500#'
+                    url: 'https://httpbingo.org/status/500#'
                 });
 
                 try {
@@ -1181,13 +1181,13 @@ test('WalmartMarketplace', { concurrency: true }, async (t) => {
                 cache.clear();
                 const accessToken = await walmartMarketplace.authentication.getAccessToken();
                 const json = JSON.parse(cache.keys()[0]);
-                json.url = 'https://httpbin.org/status/500#';
+                json.url = 'https://httpbingo.org/status/500#';
                 cache.put(JSON.stringify(json), accessToken);
 
                 walmartMarketplace = new WalmartMarketplace({
                     clientId: process.env.CLIENT_ID,
                     clientSecret: process.env.CLIENT_SECRET,
-                    url: 'https://httpbin.org/status/500#'
+                    url: 'https://httpbingo.org/status/500#'
                 });
 
                 try {
@@ -1257,13 +1257,13 @@ test('WalmartMarketplace', { concurrency: true }, async (t) => {
                 cache.clear();
                 const accessToken = await walmartMarketplace.authentication.getAccessToken();
                 const json = JSON.parse(cache.keys()[0]);
-                json.url = 'https://httpbin.org/status/500#';
+                json.url = 'https://httpbingo.org/status/500#';
                 cache.put(JSON.stringify(json), accessToken);
 
                 walmartMarketplace = new WalmartMarketplace({
                     clientId: process.env.CLIENT_ID,
                     clientSecret: process.env.CLIENT_SECRET,
-                    url: 'https://httpbin.org/status/500#'
+                    url: 'https://httpbingo.org/status/500#'
                 });
 
                 try {
@@ -1288,13 +1288,13 @@ test('WalmartMarketplace', { concurrency: true }, async (t) => {
                 cache.clear();
                 const accessToken = await walmartMarketplace.authentication.getAccessToken();
                 const json = JSON.parse(cache.keys()[0]);
-                json.url = 'https://httpbin.org/status/500#';
+                json.url = 'https://httpbingo.org/status/500#';
                 cache.put(JSON.stringify(json), accessToken);
 
                 walmartMarketplace = new WalmartMarketplace({
                     clientId: process.env.CLIENT_ID,
                     clientSecret: process.env.CLIENT_SECRET,
-                    url: 'https://httpbin.org/status/500#'
+                    url: 'https://httpbingo.org/status/500#'
                 });
 
                 try {
@@ -1329,13 +1329,13 @@ test('WalmartMarketplace', { concurrency: true }, async (t) => {
                 cache.clear();
                 const accessToken = await walmartMarketplace.authentication.getAccessToken();
                 const json = JSON.parse(cache.keys()[0]);
-                json.url = 'https://httpbin.org/status/500#';
+                json.url = 'https://httpbingo.org/status/500#';
                 cache.put(JSON.stringify(json), accessToken);
 
                 walmartMarketplace = new WalmartMarketplace({
                     clientId: process.env.CLIENT_ID,
                     clientSecret: process.env.CLIENT_SECRET,
-                    url: 'https://httpbin.org/status/500#'
+                    url: 'https://httpbingo.org/status/500#'
                 });
 
                 try {
@@ -1386,13 +1386,13 @@ test('WalmartMarketplace', { concurrency: true }, async (t) => {
                 cache.clear();
                 const accessToken = await walmartMarketplace.authentication.getAccessToken();
                 const json = JSON.parse(cache.keys()[0]);
-                json.url = 'https://httpbin.org/status/500#';
+                json.url = 'https://httpbingo.org/status/500#';
                 cache.put(JSON.stringify(json), accessToken);
 
                 walmartMarketplace = new WalmartMarketplace({
                     clientId: process.env.CLIENT_ID,
                     clientSecret: process.env.CLIENT_SECRET,
-                    url: 'https://httpbin.org/status/500#'
+                    url: 'https://httpbingo.org/status/500#'
                 });
 
                 try {
@@ -1447,13 +1447,13 @@ test('WalmartMarketplace', { concurrency: true }, async (t) => {
                 cache.clear();
                 const accessToken = await walmartMarketplace.authentication.getAccessToken();
                 const json = JSON.parse(cache.keys()[0]);
-                json.url = 'https://httpbin.org/status/500#';
+                json.url = 'https://httpbingo.org/status/500#';
                 cache.put(JSON.stringify(json), accessToken);
 
                 walmartMarketplace = new WalmartMarketplace({
                     clientId: process.env.CLIENT_ID,
                     clientSecret: process.env.CLIENT_SECRET,
-                    url: 'https://httpbin.org/status/500#'
+                    url: 'https://httpbingo.org/status/500#'
                 });
 
                 try {
@@ -1493,7 +1493,7 @@ test('WalmartMarketplace', { concurrency: true }, async (t) => {
                 let walmartMarketplace = new WalmartMarketplace({
                     clientId: process.env.CLIENT_ID,
                     clientSecret: process.env.CLIENT_SECRET,
-                    url: 'https://httpbin.org/status/500#'
+                    url: 'https://httpbingo.org/status/500#'
                 });
 
                 walmartMarketplace.reports.downloadReportUrl('test-request-id', function(err, response) {
@@ -1530,13 +1530,13 @@ test('WalmartMarketplace', { concurrency: true }, async (t) => {
                 cache.clear();
                 const accessToken = await walmartMarketplace.authentication.getAccessToken();
                 const json = JSON.parse(cache.keys()[0]);
-                json.url = 'https://httpbin.org/status/500#';
+                json.url = 'https://httpbingo.org/status/500#';
                 cache.put(JSON.stringify(json), accessToken);
 
                 walmartMarketplace = new WalmartMarketplace({
                     clientId: process.env.CLIENT_ID,
                     clientSecret: process.env.CLIENT_SECRET,
-                    url: 'https://httpbin.org/status/500#'
+                    url: 'https://httpbingo.org/status/500#'
                 });
 
                 try {
@@ -1603,7 +1603,7 @@ test('WalmartMarketplace.authentication', { concurrency: true }, async (t) => {
             const walmartMarketplace = new WalmartMarketplace({
                 clientId: process.env.CLIENT_ID,
                 clientSecret: process.env.CLIENT_SECRET,
-                url: 'https://httpbin.org/status/500#'
+                url: 'https://httpbingo.org/status/500#'
             });
 
             try {
@@ -1676,7 +1676,7 @@ test('WalmartMarketplace.authentication', { concurrency: true }, async (t) => {
             const walmartMarketplace = new WalmartMarketplace({
                 clientId: process.env.CLIENT_ID,
                 clientSecret: process.env.CLIENT_SECRET,
-                url: 'https://httpbin.org/status/500#'
+                url: 'https://httpbingo.org/status/500#'
             });
 
             walmartMarketplace.authentication.getAccessToken(function(err, accessToken) {
