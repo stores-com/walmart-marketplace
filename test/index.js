@@ -45,7 +45,7 @@ test('WalmartMarketplace', { concurrency: true }, async (t) => {
                 } catch (err) {
                     assert(err);
                     assert.strictEqual(err.cause.status, 500);
-                    assert.strictEqual(err.message, '500 INTERNAL SERVER ERROR');
+                    assert.strictEqual(err.message, '500 Internal Server Error');
                 }
             });
         });
@@ -145,7 +145,7 @@ test('WalmartMarketplace', { concurrency: true }, async (t) => {
                 } catch (err) {
                     assert(err);
                     assert.strictEqual(err.cause.status, 500);
-                    assert.strictEqual(err.message, '500 INTERNAL SERVER ERROR');
+                    assert.strictEqual(err.message, '500 Internal Server Error');
                 }
             });
         });
@@ -267,7 +267,7 @@ test('WalmartMarketplace', { concurrency: true }, async (t) => {
                 } catch (err) {
                     assert(err);
                     assert.strictEqual(err.cause.status, 500);
-                    assert.strictEqual(err.message, '500 INTERNAL SERVER ERROR');
+                    assert.strictEqual(err.message, '500 Internal Server Error');
                 }
             });
         });
@@ -354,7 +354,7 @@ test('WalmartMarketplace', { concurrency: true }, async (t) => {
                 } catch (err) {
                     assert(err);
                     assert.strictEqual(err.cause.status, 500);
-                    assert.strictEqual(err.message, '500 INTERNAL SERVER ERROR');
+                    assert.strictEqual(err.message, '500 Internal Server Error');
                 }
             });
         });
@@ -413,7 +413,7 @@ test('WalmartMarketplace', { concurrency: true }, async (t) => {
                 } catch (err) {
                     assert(err);
                     assert.strictEqual(err.cause.status, 500);
-                    assert.strictEqual(err.message, '500 INTERNAL SERVER ERROR');
+                    assert.strictEqual(err.message, '500 Internal Server Error');
                 }
             });
         });
@@ -481,7 +481,7 @@ test('WalmartMarketplace', { concurrency: true }, async (t) => {
                 } catch (err) {
                     assert(err);
                     assert.strictEqual(err.cause.status, 500);
-                    assert.strictEqual(err.message, '500 INTERNAL SERVER ERROR');
+                    assert.strictEqual(err.message, '500 Internal Server Error');
                 }
             });
         });
@@ -554,7 +554,7 @@ test('WalmartMarketplace', { concurrency: true }, async (t) => {
                 } catch (err) {
                     assert(err);
                     assert.strictEqual(err.cause.status, 500);
-                    assert.strictEqual(err.message, '500 INTERNAL SERVER ERROR');
+                    assert.strictEqual(err.message, '500 Internal Server Error');
                 }
             });
         });
@@ -611,7 +611,7 @@ test('WalmartMarketplace', { concurrency: true }, async (t) => {
                 } catch (err) {
                     assert(err);
                     assert.strictEqual(err.cause.status, 500);
-                    assert.strictEqual(err.message, '500 INTERNAL SERVER ERROR');
+                    assert.strictEqual(err.message, '500 Internal Server Error');
                 }
             });
         });
@@ -683,7 +683,7 @@ test('WalmartMarketplace', { concurrency: true }, async (t) => {
                 } catch (err) {
                     assert(err);
                     assert.strictEqual(err.cause.status, 500);
-                    assert.strictEqual(err.message, '500 INTERNAL SERVER ERROR');
+                    assert.strictEqual(err.message, '500 Internal Server Error');
                 }
             });
         });
@@ -751,7 +751,7 @@ test('WalmartMarketplace', { concurrency: true }, async (t) => {
                 } catch (err) {
                     assert(err);
                     assert.strictEqual(err.cause.status, 500);
-                    assert.strictEqual(err.message, '500 INTERNAL SERVER ERROR');
+                    assert.strictEqual(err.message, '500 Internal Server Error');
                 }
             });
         });
@@ -819,7 +819,7 @@ test('WalmartMarketplace', { concurrency: true }, async (t) => {
                 } catch (err) {
                     assert(err);
                     assert.strictEqual(err.cause.status, 500);
-                    assert.strictEqual(err.message, '500 INTERNAL SERVER ERROR');
+                    assert.strictEqual(err.message, '500 Internal Server Error');
                 }
             });
         });
@@ -1044,7 +1044,7 @@ test('WalmartMarketplace', { concurrency: true }, async (t) => {
                 } catch (err) {
                     assert(err);
                     assert.strictEqual(err.cause.status, 500);
-                    assert.strictEqual(err.message, '500 INTERNAL SERVER ERROR');
+                    assert.strictEqual(err.message, '500 Internal Server Error');
                 }
             });
         });
@@ -1209,7 +1209,7 @@ test('WalmartMarketplace', { concurrency: true }, async (t) => {
                 } catch (err) {
                     assert(err);
                     assert.strictEqual(err.cause.status, 500);
-                    assert.strictEqual(err.message, '500 INTERNAL SERVER ERROR');
+                    assert.strictEqual(err.message, '500 Internal Server Error');
                 }
             });
         });
@@ -1272,7 +1272,7 @@ test('WalmartMarketplace', { concurrency: true }, async (t) => {
                 } catch (err) {
                     assert(err);
                     assert.strictEqual(err.cause.status, 500);
-                    assert.strictEqual(err.message, '500 INTERNAL SERVER ERROR');
+                    assert.strictEqual(err.message, '500 Internal Server Error');
                 }
             });
         });
@@ -1303,7 +1303,7 @@ test('WalmartMarketplace', { concurrency: true }, async (t) => {
                 } catch (err) {
                     assert(err);
                     assert.strictEqual(err.cause.status, 500);
-                    assert.strictEqual(err.message, '500 INTERNAL SERVER ERROR');
+                    assert.strictEqual(err.message, '500 Internal Server Error');
                 }
             });
         });
@@ -1344,7 +1344,7 @@ test('WalmartMarketplace', { concurrency: true }, async (t) => {
                 } catch (err) {
                     assert(err);
                     assert.strictEqual(err.cause.status, 500);
-                    assert.strictEqual(err.message, '500 INTERNAL SERVER ERROR');
+                    assert.strictEqual(err.message, '500 Internal Server Error');
                 }
             });
         });
@@ -1401,7 +1401,7 @@ test('WalmartMarketplace', { concurrency: true }, async (t) => {
                 } catch (err) {
                     assert(err);
                     assert.strictEqual(err.cause.status, 500);
-                    assert.strictEqual(err.message, '500 INTERNAL SERVER ERROR');
+                    assert.strictEqual(err.message, '500 Internal Server Error');
                 }
             });
         });
@@ -1462,7 +1462,7 @@ test('WalmartMarketplace', { concurrency: true }, async (t) => {
                 } catch (err) {
                     assert(err);
                     assert.strictEqual(err.cause.status, 500);
-                    assert.strictEqual(err.message, '500 INTERNAL SERVER ERROR');
+                    assert.strictEqual(err.message, '500 Internal Server Error');
                 }
             });
         });
@@ -1545,7 +1545,7 @@ test('WalmartMarketplace', { concurrency: true }, async (t) => {
                 } catch (err) {
                     assert(err);
                     assert.strictEqual(err.cause.status, 500);
-                    assert.strictEqual(err.message, '500 INTERNAL SERVER ERROR');
+                    assert.strictEqual(err.message, '500 Internal Server Error');
                 }
             });
         });
@@ -1612,7 +1612,7 @@ test('WalmartMarketplace.authentication', { concurrency: true }, async (t) => {
             } catch (err) {
                 assert(err);
                 assert.strictEqual(err.cause.status, 500);
-                assert.strictEqual(err.message, '500 INTERNAL SERVER ERROR');
+                assert.strictEqual(err.message, '500 Internal Server Error');
             }
         });
     });
@@ -1682,7 +1682,7 @@ test('WalmartMarketplace.authentication', { concurrency: true }, async (t) => {
             walmartMarketplace.authentication.getAccessToken(function(err, accessToken) {
                 assert(err);
                 assert.strictEqual(err.cause.status, 500);
-                assert.strictEqual(err.message, '500 INTERNAL SERVER ERROR');
+                assert.strictEqual(err.message, '500 Internal Server Error');
                 assert.strictEqual(accessToken, null);
 
                 done();
