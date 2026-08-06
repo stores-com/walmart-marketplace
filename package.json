@@ -1,7 +1,7 @@
 {
     "dependencies": {
         "@stores.com/http-error": "~1.2.0",
-        "csv-parse": "~6.2.0",
+        "csv-parse": "~7.0.2",
         "jszip": "~3.10.1",
         "memory-cache": "~0.2.0"
     },
