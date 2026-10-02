@@ -23,5 +23,5 @@
         "test": "node --test --test-force-exit --test-reporter=spec",
         "test:only": "node --test --test-force-exit --test-only --test-reporter=spec"
     },
-    "version": "2.0.0"
+    "version": "2.1.0"
 }
