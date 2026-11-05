@@ -10,6 +10,8 @@ The Walmart Marketplace APIs provide resources for sellers to manage their items
 
 https://developer.walmart.com/home/us-mp/
 
+Upgrading from v2? See the [v2 to v3 migration guide](docs/v2-to-v3.md).
+
 ## Usage
 
 ```javascript
@@ -28,17 +30,10 @@ Get access token by providing Client ID and Client Secret.
 
 https://developer.walmart.com/api/us/mp/auth
 
-**Promise Example**
+**Example**
 ```javascript
 const accessToken = await walmartMarketplace.authentication.getAccessToken();
 console.log(accessToken);
-```
-
-**Callback Example**
-```javascript
-walmartMarketplace.authentication.getAccessToken(function(err, accessToken) {
-    console.log(accessToken);
-});
 ```
 
 **Options**
@@ -63,17 +58,10 @@ Returns the feed statuses for all the specified Feed IDs.
 
 https://developer.walmart.com/us-marketplace/reference/getallfeedstatuses
 
-**Promise Example**
+**Example**
 ```javascript
 const feedStatuses = await walmartMarketplace.feeds.getAllFeedStatuses();
 console.log(feedStatuses);
-```
-
-**Callback Example**
-```javascript
-walmartMarketplace.feeds.getAllFeedStatuses(function(err, feedStatuses) {
-    console.log(feedStatuses);
-});
 ```
 
 **Options**
@@ -117,17 +105,10 @@ Returns the feed and item status for a specified Feed ID.
 
 https://developer.walmart.com/us-marketplace/reference/getfeeditemstatus
 
-**Promise Example**
+**Example**
 ```javascript
 const feedItemStatus = await walmartMarketplace.feeds.getFeedItemStatus('12234EGGT564YTEGFA@AQMBAQA', { includeDetails: true });
 console.log(feedItemStatus);
-```
-
-**Callback Example**
-```javascript
-walmartMarketplace.feeds.getFeedItemStatus('12234EGGT564YTEGFA@AQMBAQA', { includeDetails: true }, function(err, feedItemStatus) {
-    console.log(feedItemStatus);
-});
 ```
 
 **Options**
@@ -183,17 +164,10 @@ You can use this API to get the inventory for a given item.
 
 https://developer.walmart.com/api/us/mp/inventory
 
-**Promise Example**
+**Example**
 ```javascript
 const inventory = await walmartMarketplace.inventory.getInventory('97964_KFTest');
 console.log(inventory);
-```
-
-**Callback Example**
-```javascript
-walmartMarketplace.inventory.getInventory('97964_KFTest', function(err, inventory) {
-    console.log(inventory);
-});
 ```
 
 **Options**
@@ -221,7 +195,7 @@ Updates the inventory for a given item.
 
 https://developer.walmart.com/api/us/mp/inventory#operation/updateInventoryForAnItem
 
-**Promise Example**
+**Example**
 ```javascript
 const inventory = {
     quantity: {
@@ -233,21 +207,6 @@ const inventory = {
 
 const response = await walmartMarketplace.inventory.updateInventory(inventory);
 console.log(response);
-```
-
-**Callback Example**
-```javascript
-const inventory = {
-    quantity: {
-        amount: 10,
-        unit: 'EACH'
-    },
-    sku: '97964_KFTest'
-};
-
-walmartMarketplace.inventory.updateInventory(inventory, function(err, response) {
-    console.log(response);
-});
 ```
 
 **Options**
@@ -275,7 +234,7 @@ Use this API for initial item setup and maintenance.
 
 https://developer.walmart.com/api/us/mp/items#operation/itemBulkUploads
 
-**Promise Example**
+**Example**
 ```javascript
 const mpItemMatch = {
     MPItemFeedHeader: {
@@ -301,33 +260,6 @@ const response = await walmartMarketplace.items.bulkItemSetup('MP_ITEM_MATCH', m
 console.log(response);
 ```
 
-**Callback Example**
-```javascript
-const mpItemMatch = {
-    MPItemFeedHeader: {
-        locale: 'en',
-        sellingChannel: 'mpsetupbymatch',
-        version: '4.2'
-    },
-    MPItem: [{
-        Item: {
-            condition: 'New',
-            price: 123,
-            productIdentifiers: {
-                productId: '123456789012',
-                productIdType: 'UPC'
-            },
-            ShippingWeight: 1,
-            sku: '123abc'
-        }
-    }]
-};
-
-walmartMarketplace.items.bulkItemSetup('MP_ITEM_MATCH', mpItemMatch, function(err, response) {
-    console.log(response);
-});
-```
-
 **Options**
 ```
 {
@@ -348,17 +280,10 @@ Retrieves an item and displays the item details.
 
 https://developer.walmart.com/api/us/mp/items#operation/getAnItem
 
-**Promise Example**
+**Example**
 ```javascript
 const itemDetails = await walmartMarketplace.items.getAnItem('97964_KFTest');
 console.log(itemDetails);
-```
-
-**Callback Example**
-```javascript
-walmartMarketplace.items.getAnItem('97964_KFTest', function(err, itemDetails) {
-    console.log(itemDetails);
-});
 ```
 
 **Options**
@@ -402,17 +327,10 @@ The Item Search API allows you to query the Walmart.com global product catalog b
 
 https://developer.walmart.com/api/us/mp/items#operation/getSearchResult
 
-**Promise Example**
+**Example**
 ```javascript
 const searchResults = await walmartMarketplace.items.itemSearch({ upc: '086279171801' });
 console.log(searchResults);
-```
-
-**Callback Example**
-```javascript
-walmartMarketplace.items.itemSearch({ upc: '086279171801' }, function(err, searchResults) {
-    console.log(searchResults);
-});
 ```
 
 **Options**
@@ -541,17 +459,10 @@ Completely deactivates and un-publishes an item from the site.
 
 https://developer.walmart.com/api/us/mp/items#operation/retireAnItem
 
-**Promise Example**
+**Example**
 ```javascript
 const response = await walmartMarketplace.items.retireAnItem('97964_KFTest');
 console.log(response);
-```
-
-**Callback Example**
-```javascript
-walmartMarketplace.items.retireAnItem('97964_KFTest', function(err, response) {
-    console.log(response);
-});
 ```
 
 **Options**
@@ -577,18 +488,11 @@ You can use this API to acknowledge an entire order, including all of its order 
 
 https://developer.walmart.com/api/us/mp/orders#operation/acknowledgeOrders
 
-**Promise Example**
+**Example**
 ```javascript
 const response = await walmartMarketplace.orders.acknowledgeOrder('1796277083022');
 console.log(response);
 
-```
-
-**Callback Example**
-```javascript
-walmartMarketplace.orders.acknowledgeOrder('1796277083022', function(err, response) {
-    console.log(response);
-});
 ```
 
 **Options**
@@ -683,7 +587,7 @@ Retrieves the details of all the orders for specified search criteria.
 
 https://developer.walmart.com/api/us/mp/orders#operation/getAllOrders
 
-**Promise Example**
+**Example**
 ```javascript
 const options = {
     sku: '97964_KFTest'
@@ -691,17 +595,6 @@ const options = {
 
 const orders = await walmartMarketplace.orders.getAllOrders(options);
 console.log(orders);
-```
-
-**Callback Example**
-```javascript
-const options = {
-    sku: '97964_KFTest'
-};
-
-walmartMarketplace.orders.getAllOrders(options, function(err, orders) {
-    console.log(orders);
-});
 ```
 
 **Options**
@@ -815,7 +708,7 @@ Retrieves all the orders with line items that are in the "created" status, that 
 
 https://developer.walmart.com/api/us/mp/orders#operation/getAllReleasedOrders
 
-**Promise Example**
+**Example**
 ```javascript
 const options = {
     sku: '97964_KFTest'
@@ -823,17 +716,6 @@ const options = {
 
 const orders = await walmartMarketplace.orders.getAllReleaseOrders(options);
 console.log(orders);
-```
-
-**Callback Example**
-```javascript
-const options = {
-    sku: '97964_KFTest'
-};
-
-walmartMarketplace.orders.getAllReleaseOrders(options, function(err, orders) {
-    console.log(orders);
-});
 ```
 
 **Options**
@@ -944,7 +826,7 @@ Updates the status of order lines to Shipped and trigger the charge to the custo
 
 https://developer.walmart.com/api/us/mp/orders#operation/shippingUpdates
 
-**Promise Example**
+**Example**
 ```javascript
 const orderShipment = {
     orderShipment: {
@@ -1026,91 +908,6 @@ const orderShipment = {
 
 const response = await walmartMarketplace.orders.shipOrderLines('1234567891234', orderShipment);
 console.log(response);
-```
-
-**Callback Example**
-```javascript
-const orderShipment = {
-    orderShipment: {
-        orderLines: {
-            orderLine: [
-                {
-                    intentToCancelOverride: false,
-                    lineNumber: '1',
-                    orderLineStatuses: {
-                        orderLineStatus: [
-                            {
-                                status: 'Shipped',
-                                statusQuantity: {
-                                    amount: '1',
-                                    unitOfMeasurement: 'EACH'
-                                },
-                                trackingInfo: {
-                                    carrierName: {
-                                        carrier: 'UPS'
-                                    },
-                                    methodCode: 'Standard',
-                                    shipDateTime: 1580821866000,
-                                    trackingNumber: '22344',
-                                    trackingURL: 'http://walmart/tracking/ups?&type=MP&seller_id=12345&promise_date=03/02/2020&dzip=92840&tracking_numbers=92345'
-                                },
-                                returnCenterAddress: {
-                                    address1: 'walmart store 2',
-                                    city: 'Huntsville',
-                                    country: 'USA',
-                                    dayPhone: '12344',
-                                    emailId: 'walmart@walmart.com',
-                                    postalCode: '35805',
-                                    name: 'walmart',
-                                    state: 'AL',
-                                }
-                            }
-                        ]
-                    },
-                    sellerOrderId: '92344'
-                },
-                {
-                    lineNumber: '2',
-                    orderLineStatuses: {
-                        orderLineStatus: [
-                            {
-                                status: 'Shipped',
-                                statusQuantity: {
-                                    amount: '1',
-                                    unitOfMeasurement: 'EACH'
-                                },
-                                trackingInfo: {
-                                    carrierName: {
-                                        carrier: 'FedEx'
-                                    },
-                                    methodCode: 'Express',
-                                    shipDateTime: 1580821866000,
-                                    trackingNumber: 22344,
-                                    trackingURL: 'http://walmart/tracking/fedEx?&type=MP&seller_id=12345&promise_date=03/02/2020&dzip=92840&tracking_numbers=92344'
-                                },
-                                returnCenterAddress: {
-                                    address1: 'walmart store 2',
-                                    city: 'Huntsville',
-                                    country: 'USA',
-                                    dayPhone: '12344',
-                                    emailId: 'walmart@walmart.com',
-                                    postalCode: '35805',
-                                    name: 'walmart',
-                                    state: 'AL',
-                                }
-                            }
-                        ]
-                    },
-                    sellerOrderId: '92344'
-                }
-            ]
-        }
-    }
-};
-
-walmartMarketplace.orders.shipOrderLines('1234567891234', orderShipment, function(err, response) {
-    console.log(response);
-});
 ```
 
 **Options**
@@ -1219,7 +1016,7 @@ Updates the regular price for a given item.
 
 https://developer.walmart.com/api/us/mp/price#operation/updatePrice
 
-**Promise Example**
+**Example**
 ```javascript
 const price = {
     pricing: [
@@ -1236,26 +1033,6 @@ const price = {
 
 const response = await walmartMarketplace.prices.updatePrice(price);
 console.log(response);
-```
-
-**Callback Example**
-```javascript
-const price = {
-    pricing: [
-        {
-            currentPrice: {
-                amount: 12.34,
-                currency: 'USD'
-            },
-            currentPriceType: 'BASE'
-        }
-    ],
-    sku: '97964_KFTest'
-};
-
-walmartMarketplace.prices.updatePrice(price, function(err, response) {
-    console.log(response);
-});
 ```
 
 **Options**
@@ -1282,17 +1059,10 @@ This API will list all the available Marketplace reconciliation report dates for
 
 https://developer.walmart.com/api/us/mp/reports#operation/getAvailableV1ReconReportDates
 
-**Promise Example**
+**Example**
 ```javascript
 const response = await walmartMarketplace.reports.getAvailableReconciliationReportDates();
 console.log(response);
-```
-
-**Callback Example**
-```javascript
-walmartMarketplace.reports.getAvailableReconciliationReportDates(function(err, response) {
-    console.log(response);
-});
 ```
 
 **Options**
@@ -1315,17 +1085,10 @@ Seller can download the reconciliation report for a specific date using this API
 
 https://developer.walmart.com/api/us/mp/reports#operation/getReconReportV1
 
-**Promise Example**
+**Example**
 ```javascript
 const response = await walmartMarketplace.reports.getReconciliationReport('04252023', { autoPagination: true });
 console.log(response);
-```
-
-**Callback Example**
-```javascript
-walmartMarketplace.reports.getReconciliationReport('04252023', { autoPagination: true }, function(err, response) {
-    console.log(response);
-});
 ```
 
 **Returns**

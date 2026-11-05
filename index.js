@@ -6,21 +6,6 @@ const cache = require('memory-cache');
 
 const HttpError = require('@stores.com/http-error');
 
-function finalize(err, data, callback) {
-    // If a callback was provided, call it
-    if (callback) {
-        return callback(err, data);
-    }
-
-    // If there was an error, reject the promise
-    if (err) {
-        return Promise.reject(err);
-    }
-
-    // Resolve the promise with the data
-    return Promise.resolve(data);
-}
-
 /**
  * @param {Object} args
  * @param {String} args.clientId Pre-registered identifier that uniquely identifies a solution provider app.
@@ -47,56 +32,44 @@ function WalmartMarketplace(args) {
          * @returns {Object} token.expires_in Expiry time of access token in seconds.
          * @returns {Object} token.token_type Type of token according to user. (e.g., 'BEARER').
          */
-        getAccessToken: async function(options, callback) {
-            try {
-                // Options are optional
-                if (!options) {
-                    options = {};
-                } else if (typeof options === 'function') {
-                    callback = options;
-                    options = {};
-                }
+        getAccessToken: async function(options = {}) {
+            // Generate a cache key for the access token
+            const cacheKey = JSON.stringify(_options);
 
-                // Generate a cache key for the access token
-                const cacheKey = JSON.stringify(_options);
+            // Try to get the access token from memory cache
+            let accessToken = cache.get(cacheKey);
 
-                // Try to get the access token from memory cache
-                let accessToken = cache.get(cacheKey);
-
-                // Return the access token if it exists in memory cache
-                if (accessToken) {
-                    return finalize(null, accessToken, callback);
-                }
-
-                // Get the access token from the API
-                const response = await fetch(`${_options.url}/v3/token`, {
-                    body: new URLSearchParams({
-                        grant_type: 'client_credentials'
-                    }),
-                    headers: {
-                        Accept: 'application/json',
-                        Authorization: `Basic ${Buffer.from(`${_options.clientId}:${_options.clientSecret}`).toString('base64')}`,
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                        'WM_QOS.CORRELATION_ID': options['WM_QOS.CORRELATION_ID'] || crypto.randomUUID(),
-                        'WM_SVC.NAME': _options['WM_SVC.NAME']
-                    },
-                    method: 'POST'
-                });
-
-                if (!response.ok) {
-                    return finalize(await HttpError.from(response), null, callback);
-                }
-
-                // Parse the response
-                accessToken = await response.json();
-
-                // Cache the token
-                cache.put(cacheKey, accessToken, accessToken.expires_in * 1000 / 2);
-
-                return finalize(null, accessToken, callback);
-            } catch(err) {
-                return finalize(err, null, callback);
+            // Return the access token if it exists in memory cache
+            if (accessToken) {
+                return accessToken;
             }
+
+            // Get the access token from the API
+            const response = await fetch(`${_options.url}/v3/token`, {
+                body: new URLSearchParams({
+                    grant_type: 'client_credentials'
+                }),
+                headers: {
+                    Accept: 'application/json',
+                    Authorization: `Basic ${Buffer.from(`${_options.clientId}:${_options.clientSecret}`).toString('base64')}`,
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'WM_QOS.CORRELATION_ID': options['WM_QOS.CORRELATION_ID'] || crypto.randomUUID(),
+                    'WM_SVC.NAME': _options['WM_SVC.NAME']
+                },
+                method: 'POST'
+            });
+
+            if (!response.ok) {
+                throw await HttpError.from(response);
+            }
+
+            // Parse the response
+            accessToken = await response.json();
+
+            // Cache the token
+            cache.put(cacheKey, accessToken, accessToken.expires_in * 1000 / 2);
+
+            return accessToken;
         }
     };
 
@@ -110,43 +83,31 @@ function WalmartMarketplace(args) {
          * @param {Number} [options.offset] The object response to start with, where 0 is the first entity that can be requested. Default: 0.
          * @param {String} [options['WM_QOS.CORRELATION_ID']] A unique ID which identifies each API call and used to track and debug issues. Defaults to a random UUID.
          */
-        getAllFeedStatuses: async function(options, callback) {
-            try {
-                // Options are optional
-                if (!options) {
-                    options = {};
-                } else if (typeof options === 'function') {
-                    callback = options;
-                    options = {};
+        getAllFeedStatuses: async function(options = {}) {
+            const queryParameters = new URLSearchParams();
+
+            ['feedId', 'limit', 'offset'].forEach(key => {
+                if (Object.hasOwn(options, key)) {
+                    queryParameters.set(key, options[key]);
                 }
+            });
 
-                const queryParameters = new URLSearchParams();
+            const url = `${_options.url}/v3/feeds?${queryParameters.toString()}`;
 
-                ['feedId', 'limit', 'offset'].forEach(key => {
-                    if (Object.hasOwn(options, key)) {
-                        queryParameters.set(key, options[key]);
-                    }
-                });
-
-                const url = `${_options.url}/v3/feeds?${queryParameters.toString()}`;
-
-                const response = await fetch(url, {
-                    headers: {
-                        Accept: 'application/json',
-                        'WM_QOS.CORRELATION_ID': options['WM_QOS.CORRELATION_ID'] || crypto.randomUUID(),
-                        'WM_SEC.ACCESS_TOKEN': (await _this.authentication.getAccessToken()).access_token,
-                        'WM_SVC.NAME': _options['WM_SVC.NAME']
-                    }
-                });
-
-                if (!response.ok) {
-                    throw await HttpError.from(response);
+            const response = await fetch(url, {
+                headers: {
+                    Accept: 'application/json',
+                    'WM_QOS.CORRELATION_ID': options['WM_QOS.CORRELATION_ID'] || crypto.randomUUID(),
+                    'WM_SEC.ACCESS_TOKEN': (await _this.authentication.getAccessToken()).access_token,
+                    'WM_SVC.NAME': _options['WM_SVC.NAME']
                 }
+            });
 
-                return finalize(null, await response.json(), callback);
-            } catch(err) {
-                return finalize(err, null, callback);
+            if (!response.ok) {
+                throw await HttpError.from(response);
             }
+
+            return await response.json();
         },
         /**
          * Returns the feed and item status for a specified Feed ID.
@@ -158,43 +119,31 @@ function WalmartMarketplace(args) {
          * @param {Number} [options.offset] The object response to start with, where 0 is the first entity that can be requested. Default: 0.
          * @param {String} [options['WM_QOS.CORRELATION_ID']] A unique ID which identifies each API call and used to track and debug issues. Defaults to a random UUID.
          */
-        getFeedItemStatus: async function(feedId, options, callback) {
-            try {
-                // Options are optional
-                if (!options) {
-                    options = {};
-                } else if (typeof options === 'function') {
-                    callback = options;
-                    options = {};
+        getFeedItemStatus: async function(feedId, options = {}) {
+            const queryParameters = new URLSearchParams();
+
+            ['includeDetails', 'limit', 'offset'].forEach(key => {
+                if (Object.hasOwn(options, key)) {
+                    queryParameters.set(key, options[key]);
                 }
+            });
 
-                const queryParameters = new URLSearchParams();
+            const url = `${_options.url}/v3/feeds/${encodeURIComponent(feedId)}?${queryParameters.toString()}`;
 
-                ['includeDetails', 'limit', 'offset'].forEach(key => {
-                    if (Object.hasOwn(options, key)) {
-                        queryParameters.set(key, options[key]);
-                    }
-                });
-
-                const url = `${_options.url}/v3/feeds/${encodeURIComponent(feedId)}?${queryParameters.toString()}`;
-
-                const response = await fetch(url, {
-                    headers: {
-                        Accept: 'application/json',
-                        'WM_QOS.CORRELATION_ID': options['WM_QOS.CORRELATION_ID'] || crypto.randomUUID(),
-                        'WM_SEC.ACCESS_TOKEN': (await _this.authentication.getAccessToken()).access_token,
-                        'WM_SVC.NAME': _options['WM_SVC.NAME']
-                    }
-                });
-
-                if (!response.ok) {
-                    throw await HttpError.from(response);
+            const response = await fetch(url, {
+                headers: {
+                    Accept: 'application/json',
+                    'WM_QOS.CORRELATION_ID': options['WM_QOS.CORRELATION_ID'] || crypto.randomUUID(),
+                    'WM_SEC.ACCESS_TOKEN': (await _this.authentication.getAccessToken()).access_token,
+                    'WM_SVC.NAME': _options['WM_SVC.NAME']
                 }
+            });
 
-                return finalize(null, await response.json(), callback);
-            } catch(err) {
-                return finalize(err, null, callback);
+            if (!response.ok) {
+                throw await HttpError.from(response);
             }
+
+            return await response.json();
         }
     };
 
@@ -207,43 +156,31 @@ function WalmartMarketplace(args) {
          * @param {String} [options.shipNode] The shipNode for which the inventory is requested.
          * @param {String} [options['WM_QOS.CORRELATION_ID']] A unique ID which identifies each API call and used to track and debug issues. Defaults to a random UUID.
          */
-        getInventory: async function(sku, options, callback) {
-            try {
-                // Options are optional
-                if (!options) {
-                    options = {};
-                } else if (typeof options === 'function') {
-                    callback = options;
-                    options = {};
+        getInventory: async function(sku, options = {}) {
+            const queryParameters = new URLSearchParams({ sku });
+
+            ['shipNode'].forEach(key => {
+                if (Object.hasOwn(options, key)) {
+                    queryParameters.set(key, options[key]);
                 }
+            });
 
-                const queryParameters = new URLSearchParams({ sku });
+            const url = `${_options.url}/v3/inventory?${queryParameters.toString()}`;
 
-                ['shipNode'].forEach(key => {
-                    if (Object.hasOwn(options, key)) {
-                        queryParameters.set(key, options[key]);
-                    }
-                });
-
-                const url = `${_options.url}/v3/inventory?${queryParameters.toString()}`;
-
-                const response = await fetch(url, {
-                    headers: {
-                        Accept: 'application/json',
-                        'WM_QOS.CORRELATION_ID': options['WM_QOS.CORRELATION_ID'] || crypto.randomUUID(),
-                        'WM_SEC.ACCESS_TOKEN': (await _this.authentication.getAccessToken()).access_token,
-                        'WM_SVC.NAME': _options['WM_SVC.NAME']
-                    }
-                });
-
-                if (!response.ok) {
-                    throw await HttpError.from(response);
+            const response = await fetch(url, {
+                headers: {
+                    Accept: 'application/json',
+                    'WM_QOS.CORRELATION_ID': options['WM_QOS.CORRELATION_ID'] || crypto.randomUUID(),
+                    'WM_SEC.ACCESS_TOKEN': (await _this.authentication.getAccessToken()).access_token,
+                    'WM_SVC.NAME': _options['WM_SVC.NAME']
                 }
+            });
 
-                return finalize(null, await response.json(), callback);
-            } catch(err) {
-                return finalize(err, null, callback);
+            if (!response.ok) {
+                throw await HttpError.from(response);
             }
+
+            return await response.json();
         },
         /**
          * Updates the inventory for a given item.
@@ -257,46 +194,34 @@ function WalmartMarketplace(args) {
          * @param {String} [options.shipNode] The shipNode for which the inventory is requested.
          * @param {String} [options['WM_QOS.CORRELATION_ID']] A unique ID which identifies each API call and used to track and debug issues. Defaults to a random UUID.
          */
-        updateInventory: async function(inventory, options, callback) {
-            try {
-                // Options are optional
-                if (!options) {
-                    options = {};
-                } else if (typeof options === 'function') {
-                    callback = options;
-                    options = {};
+        updateInventory: async function(inventory, options = {}) {
+            const queryParameters = new URLSearchParams({ sku: inventory.sku });
+
+            ['shipNode'].forEach(key => {
+                if (Object.hasOwn(options, key)) {
+                    queryParameters.set(key, options[key]);
                 }
+            });
 
-                const queryParameters = new URLSearchParams({ sku: inventory.sku });
+            const url = `${_options.url}/v3/inventory?${queryParameters.toString()}`;
 
-                ['shipNode'].forEach(key => {
-                    if (Object.hasOwn(options, key)) {
-                        queryParameters.set(key, options[key]);
-                    }
-                });
+            const response = await fetch(url, {
+                body: JSON.stringify(inventory),
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
+                    'WM_QOS.CORRELATION_ID': options['WM_QOS.CORRELATION_ID'] || crypto.randomUUID(),
+                    'WM_SEC.ACCESS_TOKEN': (await _this.authentication.getAccessToken()).access_token,
+                    'WM_SVC.NAME': _options['WM_SVC.NAME']
+                },
+                method: 'PUT'
+            });
 
-                const url = `${_options.url}/v3/inventory?${queryParameters.toString()}`;
-
-                const response = await fetch(url, {
-                    body: JSON.stringify(inventory),
-                    headers: {
-                        Accept: 'application/json',
-                        'Content-Type': 'application/json',
-                        'WM_QOS.CORRELATION_ID': options['WM_QOS.CORRELATION_ID'] || crypto.randomUUID(),
-                        'WM_SEC.ACCESS_TOKEN': (await _this.authentication.getAccessToken()).access_token,
-                        'WM_SVC.NAME': _options['WM_SVC.NAME']
-                    },
-                    method: 'PUT'
-                });
-
-                if (!response.ok) {
-                    throw await HttpError.from(response);
-                }
-
-                return finalize(null, await response.json(), callback);
-            } catch(err) {
-                return finalize(err, null, callback);
+            if (!response.ok) {
+                throw await HttpError.from(response);
             }
+
+            return await response.json();
         }
     };
 
@@ -309,39 +234,27 @@ function WalmartMarketplace(args) {
          * @param {Object} [options]
          * @param {String} [options['WM_QOS.CORRELATION_ID']] A unique ID which identifies each API call and used to track and debug issues. Defaults to a random UUID.
          */
-        bulkItemSetup: async function(feedType, file, options, callback) {
-            try {
-                // Options are optional
-                if (!options) {
-                    options = {};
-                } else if (typeof options === 'function') {
-                    callback = options;
-                    options = {};
-                }
+        bulkItemSetup: async function(feedType, file, options = {}) {
+            const queryParameters = new URLSearchParams({ feedType });
+            const url = `${_options.url}/v3/feeds?${queryParameters.toString()}`;
 
-                const queryParameters = new URLSearchParams({ feedType });
-                const url = `${_options.url}/v3/feeds?${queryParameters.toString()}`;
+            const response = await fetch(url, {
+                body: JSON.stringify(file),
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
+                    'WM_QOS.CORRELATION_ID': options['WM_QOS.CORRELATION_ID'] || crypto.randomUUID(),
+                    'WM_SEC.ACCESS_TOKEN': (await _this.authentication.getAccessToken()).access_token,
+                    'WM_SVC.NAME': _options['WM_SVC.NAME']
+                },
+                method: 'POST'
+            });
 
-                const response = await fetch(url, {
-                    body: JSON.stringify(file),
-                    headers: {
-                        Accept: 'application/json',
-                        'Content-Type': 'application/json',
-                        'WM_QOS.CORRELATION_ID': options['WM_QOS.CORRELATION_ID'] || crypto.randomUUID(),
-                        'WM_SEC.ACCESS_TOKEN': (await _this.authentication.getAccessToken()).access_token,
-                        'WM_SVC.NAME': _options['WM_SVC.NAME']
-                    },
-                    method: 'POST'
-                });
-
-                if (!response.ok) {
-                    throw await HttpError.from(response);
-                }
-
-                return finalize(null, await response.json(), callback);
-            } catch(err) {
-                return finalize(err, null, callback);
+            if (!response.ok) {
+                throw await HttpError.from(response);
             }
+
+            return await response.json();
         },
         /**
          * Get Catalog Search Result.
@@ -354,68 +267,64 @@ function WalmartMarketplace(args) {
          * @param {String} [options.query.value]
          * @param {String} [options['WM_QOS.CORRELATION_ID']] A unique ID which identifies each API call and used to track and debug issues. Defaults to a random UUID.
          */
-        catalogSearch: async function(options, callback) {
-            try {
-                const items = [];
+        catalogSearch: async function(options) {
+            const items = [];
 
-                const fetchItems = async cursor => {
-                    let url;
+            const fetchItems = async cursor => {
+                let url;
 
-                    if (cursor) {
-                        url = `${_options.url}/v3/items/catalog/search?nextCursor=${cursor}`;
-                    } else {
-                        const queryParameters = new URLSearchParams();
+                if (cursor) {
+                    url = `${_options.url}/v3/items/catalog/search?nextCursor=${cursor}`;
+                } else {
+                    const queryParameters = new URLSearchParams();
 
-                        ['limit'].forEach(key => {
-                            if (Object.hasOwn(options, key)) {
-                                queryParameters.set(key, options[key]);
-                            }
-                        });
-
-                        url = `${_options.url}/v3/items/catalog/search?${queryParameters.toString()}`;
-                    }
-
-                    let body = {};
-
-                    if (options?.query) {
-                        body.query = options.query;
-                    }
-
-                    const response = await fetch(url, {
-                        body: JSON.stringify(body),
-                        headers: {
-                            Accept: 'application/json',
-                            'Content-Type': 'application/json',
-                            'WM_QOS.CORRELATION_ID': crypto.randomUUID(),
-                            'WM_SEC.ACCESS_TOKEN': (await _this.authentication.getAccessToken()).access_token,
-                            'WM_SVC.NAME': _options['WM_SVC.NAME']
-                        },
-                        method: 'POST'
+                    ['limit'].forEach(key => {
+                        if (Object.hasOwn(options, key)) {
+                            queryParameters.set(key, options[key]);
+                        }
                     });
 
-                    if (!response.ok) {
-                        throw await HttpError.from(response);
+                    url = `${_options.url}/v3/items/catalog/search?${queryParameters.toString()}`;
+                }
+
+                let body = {};
+
+                if (options?.query) {
+                    body.query = options.query;
+                }
+
+                const response = await fetch(url, {
+                    body: JSON.stringify(body),
+                    headers: {
+                        Accept: 'application/json',
+                        'Content-Type': 'application/json',
+                        'WM_QOS.CORRELATION_ID': crypto.randomUUID(),
+                        'WM_SEC.ACCESS_TOKEN': (await _this.authentication.getAccessToken()).access_token,
+                        'WM_SVC.NAME': _options['WM_SVC.NAME']
+                    },
+                    method: 'POST'
+                });
+
+                if (!response.ok) {
+                    throw await HttpError.from(response);
+                }
+
+                const data = await response.json();
+
+                if (Array.isArray(data?.payload)) {
+                    items.push(...data.payload);
+
+                    // Check for more pages and if pagination is requested
+                    if (options.autoPagination && data?.nextCursor) {
+                        await fetchItems(data.nextCursor);
                     }
+                }
+            };
 
-                    const data = await response.json();
+            // Initial call to fetch items
+            await fetchItems(null);
 
-                    if (Array.isArray(data?.payload)) {
-                        items.push(...data.payload);
-
-                        // Check for more pages and if pagination is requested
-                        if (options.autoPagination && data?.nextCursor) {
-                            await fetchItems(data.nextCursor);
-                        }
-                    }
-                };
-
-                // Initial call to fetch items
-                await fetchItems(null);
-
-                return finalize(null, items, callback);
-            } catch(err) {
-                return finalize(err, null, callback);
-            }
+            return items;
         },
         /**
          * Displays a list of all items by using either nextCursor or offset and limit query parameters.
@@ -426,64 +335,60 @@ function WalmartMarketplace(args) {
          * @param {Number} [options.limit] Number of items. Default: 20.
          * @param {Number} [options.offset] The object response to start with, where 0 is the first entity that can be requested. Default: 0.
          */
-        getAllItems: async function(options, callback) {
-            try {
-                const items = [];
+        getAllItems: async function(options) {
+            const items = [];
 
-                const fetchItems = async nextCursor => {
-                    let url;
+            const fetchItems = async nextCursor => {
+                let url;
 
-                    if (nextCursor) {
-                        url = `${_options.url}/v3/items?nextCursor=${nextCursor}`;
-                    } else {
-                        const queryParameters = new URLSearchParams();
+                if (nextCursor) {
+                    url = `${_options.url}/v3/items?nextCursor=${nextCursor}`;
+                } else {
+                    const queryParameters = new URLSearchParams();
 
-                        ['lifecycleStatus', 'limit', 'offset'].forEach(key => {
-                            if (Object.hasOwn(options, key)) {
-                                queryParameters.set(key, options[key]);
-                            }
-                        });
-
-                        if (options.autoPagination) {
-                            queryParameters.set('nextCursor', '*');
-                        }
-
-                        url = `${_options.url}/v3/items?${queryParameters.toString()}`;
-                    }
-
-                    const response = await fetch(url, {
-                        headers: {
-                            Accept: 'application/json',
-                            'Content-Type': 'application/json',
-                            'WM_QOS.CORRELATION_ID': crypto.randomUUID(),
-                            'WM_SEC.ACCESS_TOKEN': (await _this.authentication.getAccessToken()).access_token,
-                            'WM_SVC.NAME': _options['WM_SVC.NAME']
+                    ['lifecycleStatus', 'limit', 'offset'].forEach(key => {
+                        if (Object.hasOwn(options, key)) {
+                            queryParameters.set(key, options[key]);
                         }
                     });
 
-                    if (!response.ok) {
-                        throw await HttpError.from(response);
+                    if (options.autoPagination) {
+                        queryParameters.set('nextCursor', '*');
                     }
 
-                    const data = await response.json();
+                    url = `${_options.url}/v3/items?${queryParameters.toString()}`;
+                }
 
-                    if (Array.isArray(data?.ItemResponse)) {
-                        items.push(...data.ItemResponse);
-
-                        // Check for more pages and if pagination is requested
-                        if (options.autoPagination && data.nextCursor && items.length < data.totalItems) {
-                            await fetchItems(data.nextCursor);
-                        }
+                const response = await fetch(url, {
+                    headers: {
+                        Accept: 'application/json',
+                        'Content-Type': 'application/json',
+                        'WM_QOS.CORRELATION_ID': crypto.randomUUID(),
+                        'WM_SEC.ACCESS_TOKEN': (await _this.authentication.getAccessToken()).access_token,
+                        'WM_SVC.NAME': _options['WM_SVC.NAME']
                     }
-                };
+                });
 
-                // Initial call to fetch items
-                await fetchItems();
+                if (!response.ok) {
+                    throw await HttpError.from(response);
+                }
 
-                return finalize(null, items, callback);
-            } catch(err) {
-                return finalize(err, null, callback);
-            }
+                const data = await response.json();
+
+                if (Array.isArray(data?.ItemResponse)) {
+                    items.push(...data.ItemResponse);
+
+                    // Check for more pages and if pagination is requested
+                    if (options.autoPagination && data.nextCursor && items.length < data.totalItems) {
+                        await fetchItems(data.nextCursor);
+                    }
+                }
+            };
+
+            // Initial call to fetch items
+            await fetchItems();
+
+            return items;
         },
         /**
          * Retrieves an item and displays the item details.
@@ -494,43 +399,31 @@ function WalmartMarketplace(args) {
          * @param {String} [options.productIdType] Item code type specifier allows to filter by specific code type, (e.g. GTIN).
          * @param {String} [options['WM_QOS.CORRELATION_ID']] A unique ID which identifies each API call and used to track and debug issues. Defaults to a random UUID.
          */
-        getAnItem: async function(id, options, callback) {
-            try {
-                // Options are optional
-                if (!options) {
-                    options = {};
-                } else if (typeof options === 'function') {
-                    callback = options;
-                    options = {};
+        getAnItem: async function(id, options = {}) {
+            const queryParameters = new URLSearchParams();
+
+            ['condition', 'productIdType'].forEach(key => {
+                if (Object.hasOwn(options, key)) {
+                    queryParameters.set(key, options[key]);
                 }
+            });
 
-                const queryParameters = new URLSearchParams();
+            const url = `${_options.url}/v3/items/${id}?${queryParameters.toString()}`;
 
-                ['condition', 'productIdType'].forEach(key => {
-                    if (Object.hasOwn(options, key)) {
-                        queryParameters.set(key, options[key]);
-                    }
-                });
-
-                const url = `${_options.url}/v3/items/${id}?${queryParameters.toString()}`;
-
-                const response = await fetch(url, {
-                    headers: {
-                        Accept: 'application/json',
-                        'WM_QOS.CORRELATION_ID': options['WM_QOS.CORRELATION_ID'] || crypto.randomUUID(),
-                        'WM_SEC.ACCESS_TOKEN': (await _this.authentication.getAccessToken()).access_token,
-                        'WM_SVC.NAME': _options['WM_SVC.NAME']
-                    }
-                });
-
-                if (!response.ok) {
-                    throw await HttpError.from(response);
+            const response = await fetch(url, {
+                headers: {
+                    Accept: 'application/json',
+                    'WM_QOS.CORRELATION_ID': options['WM_QOS.CORRELATION_ID'] || crypto.randomUUID(),
+                    'WM_SEC.ACCESS_TOKEN': (await _this.authentication.getAccessToken()).access_token,
+                    'WM_SVC.NAME': _options['WM_SVC.NAME']
                 }
+            });
 
-                return finalize(null, await response.json(), callback);
-            } catch(err) {
-                return finalize(err, null, callback);
+            if (!response.ok) {
+                throw await HttpError.from(response);
             }
+
+            return await response.json();
         },
         /**
          * The Item Search API allows you to query the Walmart.com global product catalog by item keyword, UPC or GTIN.
@@ -541,35 +434,31 @@ function WalmartMarketplace(args) {
          * @param {String} [options.upc] Specifies a Universal Product Code (UPC) search. UPC must be 12 digits.
          * @param {String} [options['WM_QOS.CORRELATION_ID']] A unique ID which identifies each API call and used to track and debug issues. Defaults to a random UUID.
          */
-        itemSearch: async function(options, callback) {
-            try {
-                const queryParameters = new URLSearchParams();
+        itemSearch: async function(options) {
+            const queryParameters = new URLSearchParams();
 
-                ['gtin', 'query', 'upc'].forEach(key => {
-                    if (Object.hasOwn(options, key)) {
-                        queryParameters.set(key, options[key]);
-                    }
-                });
-
-                const url = `${_options.url}/v3/items/walmart/search?${queryParameters.toString()}`;
-
-                const response = await fetch(url, {
-                    headers: {
-                        Accept: 'application/json',
-                        'WM_QOS.CORRELATION_ID': options['WM_QOS.CORRELATION_ID'] || crypto.randomUUID(),
-                        'WM_SEC.ACCESS_TOKEN': (await _this.authentication.getAccessToken()).access_token,
-                        'WM_SVC.NAME': _options['WM_SVC.NAME']
-                    }
-                });
-
-                if (!response.ok) {
-                    throw await HttpError.from(response);
+            ['gtin', 'query', 'upc'].forEach(key => {
+                if (Object.hasOwn(options, key)) {
+                    queryParameters.set(key, options[key]);
                 }
+            });
 
-                return finalize(null, await response.json(), callback);
-            } catch(err) {
-                return finalize(err, null, callback);
+            const url = `${_options.url}/v3/items/walmart/search?${queryParameters.toString()}`;
+
+            const response = await fetch(url, {
+                headers: {
+                    Accept: 'application/json',
+                    'WM_QOS.CORRELATION_ID': options['WM_QOS.CORRELATION_ID'] || crypto.randomUUID(),
+                    'WM_SEC.ACCESS_TOKEN': (await _this.authentication.getAccessToken()).access_token,
+                    'WM_SVC.NAME': _options['WM_SVC.NAME']
+                }
+            });
+
+            if (!response.ok) {
+                throw await HttpError.from(response);
             }
+
+            return await response.json();
         },
         /**
          * Completely deactivates and un-publishes an item from the site.
@@ -578,36 +467,24 @@ function WalmartMarketplace(args) {
          * @param {Object} [options]
          * @param {String} [options['WM_QOS.CORRELATION_ID']] A unique ID which identifies each API call and used to track and debug issues. Defaults to a random UUID.
          */
-        retireAnItem: async function(sku, options, callback) {
-            try {
-                // Options are optional
-                if (!options) {
-                    options = {};
-                } else if (typeof options === 'function') {
-                    callback = options;
-                    options = {};
-                }
+        retireAnItem: async function(sku, options = {}) {
+            const url = `${_options.url}/v3/items/${sku}`;
 
-                const url = `${_options.url}/v3/items/${sku}`;
+            const response = await fetch(url, {
+                headers: {
+                    Accept: 'application/json',
+                    'WM_QOS.CORRELATION_ID': options['WM_QOS.CORRELATION_ID'] || crypto.randomUUID(),
+                    'WM_SEC.ACCESS_TOKEN': (await _this.authentication.getAccessToken()).access_token,
+                    'WM_SVC.NAME': _options['WM_SVC.NAME']
+                },
+                method: 'DELETE'
+            });
 
-                const response = await fetch(url, {
-                    headers: {
-                        Accept: 'application/json',
-                        'WM_QOS.CORRELATION_ID': options['WM_QOS.CORRELATION_ID'] || crypto.randomUUID(),
-                        'WM_SEC.ACCESS_TOKEN': (await _this.authentication.getAccessToken()).access_token,
-                        'WM_SVC.NAME': _options['WM_SVC.NAME']
-                    },
-                    method: 'DELETE'
-                });
-
-                if (!response.ok) {
-                    throw await HttpError.from(response);
-                }
-
-                return finalize(null, await response.json(), callback);
-            } catch(err) {
-                return finalize(err, null, callback);
+            if (!response.ok) {
+                throw await HttpError.from(response);
             }
+
+            return await response.json();
         }
     };
 
@@ -619,37 +496,25 @@ function WalmartMarketplace(args) {
          * @param {Object} [options]
          * @param {String} [options['WM_QOS.CORRELATION_ID']] A unique ID which identifies each API call and used to track and debug issues. Defaults to a random UUID.
          */
-        acknowledgeOrder: async function(purchaseOrderId, options, callback) {
-            try {
-                // Options are optional
-                if (!options) {
-                    options = {};
-                } else if (typeof options === 'function') {
-                    callback = options;
-                    options = {};
-                }
+        acknowledgeOrder: async function(purchaseOrderId, options = {}) {
+            const url = `${_options.url}/v3/orders/${purchaseOrderId}/acknowledge`;
 
-                const url = `${_options.url}/v3/orders/${purchaseOrderId}/acknowledge`;
+            const response = await fetch(url, {
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
+                    'WM_QOS.CORRELATION_ID': options['WM_QOS.CORRELATION_ID'] || crypto.randomUUID(),
+                    'WM_SEC.ACCESS_TOKEN': (await _this.authentication.getAccessToken()).access_token,
+                    'WM_SVC.NAME': _options['WM_SVC.NAME']
+                },
+                method: 'POST'
+            });
 
-                const response = await fetch(url, {
-                    headers: {
-                        Accept: 'application/json',
-                        'Content-Type': 'application/json',
-                        'WM_QOS.CORRELATION_ID': options['WM_QOS.CORRELATION_ID'] || crypto.randomUUID(),
-                        'WM_SEC.ACCESS_TOKEN': (await _this.authentication.getAccessToken()).access_token,
-                        'WM_SVC.NAME': _options['WM_SVC.NAME']
-                    },
-                    method: 'POST'
-                });
-
-                if (!response.ok) {
-                    throw await HttpError.from(response);
-                }
-
-                return finalize(null, await response.json(), callback);
-            } catch(err) {
-                return finalize(err, null, callback);
+            if (!response.ok) {
+                throw await HttpError.from(response);
             }
+
+            return await response.json();
         },
         /**
          * Retrieves the details of all the orders for specified search criteria.
@@ -674,67 +539,55 @@ function WalmartMarketplace(args) {
          * @param {String} [options.toExpectedShipDate] Fetches all purchase orders that have order lines with an expected ship date before this date. Use either UTC or ISO 8601 formats. Date example: '2020-03-16'(yyyy-MM-dd). Date with Timestamp example: '2020-03-16T10:30:15Z'(yyyy-MM-dd'T'HH:mm:ssZ).
          * @param {String} [options['WM_QOS.CORRELATION_ID']] A unique ID which identifies each API call and used to track and debug issues. Defaults to a random UUID.
          */
-        getAllOrders: async function(options, callback) {
-            try {
-                // Options are optional
-                if (!options) {
-                    options = {};
-                } else if (typeof options === 'function') {
-                    callback = options;
-                    options = {};
-                }
+        getAllOrders: async function(options = {}) {
+            const orders = [];
 
-                const orders = [];
+            const fetchOrders = async cursor => {
+                let url;
 
-                const fetchOrders = async cursor => {
-                    let url;
+                if (cursor) {
+                    url = `${_options.url}/v3/orders?${cursor}`;
+                } else {
+                    const queryParameters = new URLSearchParams();
 
-                    if (cursor) {
-                        url = `${_options.url}/v3/orders?${cursor}`;
-                    } else {
-                        const queryParameters = new URLSearchParams();
-
-                        ['createdEndDate', 'createdStartDate', 'customerOrderId', 'fromExpectedShipDate', 'lastModifiedEndDate', 'lastModifiedStartDate', 'limit', 'orderType', 'productInfo', 'purchaseOrderId', 'replacementInfo', 'shipNodeType', 'shippingProgramType', 'sku', 'status', 'toExpectedShipDate'].forEach(key => {
-                            if (Object.hasOwn(options, key)) {
-                                queryParameters.set(key, options[key]);
-                            }
-                        });
-
-                        url = `${_options.url}/v3/orders?${queryParameters.toString()}`;
-                    }
-
-                    const response = await fetch(url, {
-                        headers: {
-                            Accept: 'application/json',
-                            'WM_QOS.CORRELATION_ID': crypto.randomUUID(),
-                            'WM_SEC.ACCESS_TOKEN': (await _this.authentication.getAccessToken()).access_token,
-                            'WM_SVC.NAME': _options['WM_SVC.NAME']
+                    ['createdEndDate', 'createdStartDate', 'customerOrderId', 'fromExpectedShipDate', 'lastModifiedEndDate', 'lastModifiedStartDate', 'limit', 'orderType', 'productInfo', 'purchaseOrderId', 'replacementInfo', 'shipNodeType', 'shippingProgramType', 'sku', 'status', 'toExpectedShipDate'].forEach(key => {
+                        if (Object.hasOwn(options, key)) {
+                            queryParameters.set(key, options[key]);
                         }
                     });
 
-                    if (!response.ok) {
-                        throw await HttpError.from(response);
+                    url = `${_options.url}/v3/orders?${queryParameters.toString()}`;
+                }
+
+                const response = await fetch(url, {
+                    headers: {
+                        Accept: 'application/json',
+                        'WM_QOS.CORRELATION_ID': crypto.randomUUID(),
+                        'WM_SEC.ACCESS_TOKEN': (await _this.authentication.getAccessToken()).access_token,
+                        'WM_SVC.NAME': _options['WM_SVC.NAME']
                     }
+                });
 
-                    const data = await response.json();
+                if (!response.ok) {
+                    throw await HttpError.from(response);
+                }
 
-                    if (Array.isArray(data?.list?.elements?.order)) {
-                        orders.push(...data.list.elements.order);
+                const data = await response.json();
 
-                        // Check for more pages and if pagination is requested
-                        if (options.autoPagination && data?.list?.meta?.nextCursor) {
-                            await fetchOrders(data.list.meta.nextCursor);
-                        }
+                if (Array.isArray(data?.list?.elements?.order)) {
+                    orders.push(...data.list.elements.order);
+
+                    // Check for more pages and if pagination is requested
+                    if (options.autoPagination && data?.list?.meta?.nextCursor) {
+                        await fetchOrders(data.list.meta.nextCursor);
                     }
-                };
+                }
+            };
 
-                // Initial call to fetch orders
-                await fetchOrders(null);
+            // Initial call to fetch orders
+            await fetchOrders(null);
 
-                return finalize(null, orders, callback);
-            } catch(err) {
-                return finalize(err, null, callback);
-            }
+            return orders;
         },
         /**
          * Retrieves all the orders with line items that are in the "created" status, that is, these orders have been released from the Walmart Order Management System to the seller for processing. The released orders are the orders that are ready for a seller to fulfill.
@@ -754,67 +607,55 @@ function WalmartMarketplace(args) {
          * @param {String} [options.toExpectedShipDate] Fetches all purchase orders that have order lines with an expected ship date before this date. Use either UTC or ISO 8601 formats. Date example: '2020-03-16'(yyyy-MM-dd). Date with Timestamp example: '2020-03-16T10:30:15Z'(yyyy-MM-dd'T'HH:mm:ssZ).
          * @param {String} [options['WM_QOS.CORRELATION_ID']] A unique ID which identifies each API call and used to track and debug issues. Defaults to a random UUID.
          */
-        getAllReleasedOrders: async function(options, callback) {
-            try {
-                // Options are optional
-                if (!options) {
-                    options = {};
-                } else if (typeof options === 'function') {
-                    callback = options;
-                    options = {};
-                }
+        getAllReleasedOrders: async function(options = {}) {
+            const orders = [];
 
-                const orders = [];
+            const fetchOrders = async cursor => {
+                let url;
 
-                const fetchOrders = async cursor => {
-                    let url;
+                if (cursor) {
+                    url = `${_options.url}/v3/orders/released?${cursor}`;
+                } else {
+                    const queryParameters = new URLSearchParams();
 
-                    if (cursor) {
-                        url = `${_options.url}/v3/orders/released?${cursor}`;
-                    } else {
-                        const queryParameters = new URLSearchParams();
-
-                        ['createdEndDate', 'createdStartDate', 'customerOrderId', 'fromExpectedShipDate', 'limit', 'orderType', 'productInfo', 'purchaseOrderId', 'replacementInfo', 'shipNodeType', 'shippingProgramType', 'sku', 'toExpectedShipDate'].forEach(key => {
-                            if (Object.hasOwn(options, key)) {
-                                queryParameters.set(key, options[key]);
-                            }
-                        });
-
-                        url = `${_options.url}/v3/orders/released?${queryParameters.toString()}`;
-                    }
-
-                    const response = await fetch(url, {
-                        headers: {
-                            Accept: 'application/json',
-                            'WM_QOS.CORRELATION_ID': crypto.randomUUID(),
-                            'WM_SEC.ACCESS_TOKEN': (await _this.authentication.getAccessToken()).access_token,
-                            'WM_SVC.NAME': _options['WM_SVC.NAME']
+                    ['createdEndDate', 'createdStartDate', 'customerOrderId', 'fromExpectedShipDate', 'limit', 'orderType', 'productInfo', 'purchaseOrderId', 'replacementInfo', 'shipNodeType', 'shippingProgramType', 'sku', 'toExpectedShipDate'].forEach(key => {
+                        if (Object.hasOwn(options, key)) {
+                            queryParameters.set(key, options[key]);
                         }
                     });
 
-                    if (!response.ok) {
-                        throw await HttpError.from(response);
+                    url = `${_options.url}/v3/orders/released?${queryParameters.toString()}`;
+                }
+
+                const response = await fetch(url, {
+                    headers: {
+                        Accept: 'application/json',
+                        'WM_QOS.CORRELATION_ID': crypto.randomUUID(),
+                        'WM_SEC.ACCESS_TOKEN': (await _this.authentication.getAccessToken()).access_token,
+                        'WM_SVC.NAME': _options['WM_SVC.NAME']
                     }
+                });
 
-                    const data = await response.json();
+                if (!response.ok) {
+                    throw await HttpError.from(response);
+                }
 
-                    if (Array.isArray(data?.list?.elements?.order)) {
-                        orders.push(...data.list.elements.order);
+                const data = await response.json();
 
-                        // Check for more pages and if pagination is requested
-                        if (options.autoPagination && data?.list?.meta?.nextCursor) {
-                            await fetchOrders(data.list.meta.nextCursor);
-                        }
+                if (Array.isArray(data?.list?.elements?.order)) {
+                    orders.push(...data.list.elements.order);
+
+                    // Check for more pages and if pagination is requested
+                    if (options.autoPagination && data?.list?.meta?.nextCursor) {
+                        await fetchOrders(data.list.meta.nextCursor);
                     }
-                };
+                }
+            };
 
-                // Initial call to fetch orders
-                await fetchOrders(null);
+            // Initial call to fetch orders
+            await fetchOrders(null);
 
-                return finalize(null, orders, callback);
-            } catch(err) {
-                return finalize(err, null, callback);
-            }
+            return orders;
         },
         /**
          * Updates the status of order lines to Shipped and trigger the charge to the customer. The response to a successful call contains the order with the shipped line items.
@@ -824,38 +665,26 @@ function WalmartMarketplace(args) {
          * @param {Object} [options]
          * @param {String} [options['WM_QOS.CORRELATION_ID']] A unique ID which identifies each API call and used to track and debug issues. Defaults to a random UUID.
          */
-        shipOrderLines: async function(purchaseOrderId, orderShipment, options, callback) {
-            try {
-                // Options are optional
-                if (!options) {
-                    options = {};
-                } else if (typeof options === 'function') {
-                    callback = options;
-                    options = {};
-                }
+        shipOrderLines: async function(purchaseOrderId, orderShipment, options = {}) {
+            const url = `${_options.url}/v3/orders/${purchaseOrderId}/shipping`;
 
-                const url = `${_options.url}/v3/orders/${purchaseOrderId}/shipping`;
+            const response = await fetch(url, {
+                body: JSON.stringify(orderShipment),
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
+                    'WM_QOS.CORRELATION_ID': options['WM_QOS.CORRELATION_ID'] || crypto.randomUUID(),
+                    'WM_SEC.ACCESS_TOKEN': (await _this.authentication.getAccessToken()).access_token,
+                    'WM_SVC.NAME': _options['WM_SVC.NAME']
+                },
+                method: 'POST'
+            });
 
-                const response = await fetch(url, {
-                    body: JSON.stringify(orderShipment),
-                    headers: {
-                        Accept: 'application/json',
-                        'Content-Type': 'application/json',
-                        'WM_QOS.CORRELATION_ID': options['WM_QOS.CORRELATION_ID'] || crypto.randomUUID(),
-                        'WM_SEC.ACCESS_TOKEN': (await _this.authentication.getAccessToken()).access_token,
-                        'WM_SVC.NAME': _options['WM_SVC.NAME']
-                    },
-                    method: 'POST'
-                });
-
-                if (!response.ok) {
-                    throw await HttpError.from(response);
-                }
-
-                return finalize(null, await response.json(), callback);
-            } catch(err) {
-                return finalize(err, null, callback);
+            if (!response.ok) {
+                throw await HttpError.from(response);
             }
+
+            return await response.json();
         }
     };
 
@@ -867,38 +696,26 @@ function WalmartMarketplace(args) {
          * @param {Object} [options]
          * @param {String} [options['WM_QOS.CORRELATION_ID']] A unique ID which identifies each API call and used to track and debug issues. Defaults to a random UUID.
          */
-        updatePrice: async function(price, options, callback) {
-            try {
-                // Options are optional
-                if (!options) {
-                    options = {};
-                } else if (typeof options === 'function') {
-                    callback = options;
-                    options = {};
-                }
+        updatePrice: async function(price, options = {}) {
+            const url = `${_options.url}/v3/price`;
 
-                const url = `${_options.url}/v3/price`;
+            const response = await fetch(url, {
+                body: JSON.stringify(price),
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
+                    'WM_QOS.CORRELATION_ID': options['WM_QOS.CORRELATION_ID'] || crypto.randomUUID(),
+                    'WM_SEC.ACCESS_TOKEN': (await _this.authentication.getAccessToken()).access_token,
+                    'WM_SVC.NAME': _options['WM_SVC.NAME']
+                },
+                method: 'PUT'
+            });
 
-                const response = await fetch(url, {
-                    body: JSON.stringify(price),
-                    headers: {
-                        Accept: 'application/json',
-                        'Content-Type': 'application/json',
-                        'WM_QOS.CORRELATION_ID': options['WM_QOS.CORRELATION_ID'] || crypto.randomUUID(),
-                        'WM_SEC.ACCESS_TOKEN': (await _this.authentication.getAccessToken()).access_token,
-                        'WM_SVC.NAME': _options['WM_SVC.NAME']
-                    },
-                    method: 'PUT'
-                });
-
-                if (!response.ok) {
-                    throw await HttpError.from(response);
-                }
-
-                return finalize(null, await response.json(), callback);
-            } catch(err) {
-                return finalize(err, null, callback);
+            if (!response.ok) {
+                throw await HttpError.from(response);
             }
+
+            return await response.json();
         }
     };
 
@@ -912,60 +729,36 @@ function WalmartMarketplace(args) {
          * @param {Object} [options]
          * @param {String} [options['WM_QOS.CORRELATION_ID']] A unique ID which identifies each API call and used to track and debug issues. Defaults to a random UUID.
          */
-        createReportRequest: async function(reportType, reportVersion, requestBody, options, callback) {
-            try {
-                // requestBody is optional
-                if (!requestBody) {
-                    requestBody = {};
-                } else if (typeof requestBody === 'function') {
-                    callback = requestBody;
-                    requestBody = {};
-                }
+        createReportRequest: async function(reportType, reportVersion, requestBody = {}, options = {}) {
+            const queryParameters = new URLSearchParams({ reportType, reportVersion });
+            const url = `${_options.url}/v3/reports/reportRequests?${queryParameters.toString()}`;
 
-                // Options are optional
-                if (!options) {
-                    options = {};
-                } else if (typeof options === 'function') {
-                    callback = options;
-                    options = {};
-                }
+            const response = await fetch(url, {
+                body: JSON.stringify(requestBody),
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
+                    'WM_QOS.CORRELATION_ID': options['WM_QOS.CORRELATION_ID'] || crypto.randomUUID(),
+                    'WM_SEC.ACCESS_TOKEN': (await _this.authentication.getAccessToken()).access_token,
+                    'WM_SVC.NAME': _options['WM_SVC.NAME']
+                },
+                method: 'POST'
+            });
 
-                const queryParameters = new URLSearchParams({ reportType, reportVersion });
-                const url = `${_options.url}/v3/reports/reportRequests?${queryParameters.toString()}`;
-
-                const response = await fetch(url, {
-                    body: JSON.stringify(requestBody),
-                    headers: {
-                        Accept: 'application/json',
-                        'Content-Type': 'application/json',
-                        'WM_QOS.CORRELATION_ID': options['WM_QOS.CORRELATION_ID'] || crypto.randomUUID(),
-                        'WM_SEC.ACCESS_TOKEN': (await _this.authentication.getAccessToken()).access_token,
-                        'WM_SVC.NAME': _options['WM_SVC.NAME']
-                    },
-                    method: 'POST'
-                });
-
-                if (!response.ok) {
-                    throw await HttpError.from(response);
-                }
-
-                return finalize(null, await response.json(), callback);
-            } catch(err) {
-                return finalize(err, null, callback);
+            if (!response.ok) {
+                throw await HttpError.from(response);
             }
+
+            return await response.json();
         },
-        download: async function(url, callback) {
-            try {
-                const response = await fetch(url);
-                const zip = await JSZip.loadAsync(response.arrayBuffer());
-                const file = await zip.file(Object.keys(zip.files)[0]);
-                const csv = await file.async('string');
-                const data = csvParse.parse(csv, { columns: true });
+        download: async function(url) {
+            const response = await fetch(url);
+            const zip = await JSZip.loadAsync(response.arrayBuffer());
+            const file = await zip.file(Object.keys(zip.files)[0]);
+            const csv = await file.async('string');
+            const data = csvParse.parse(csv, { columns: true });
 
-                return finalize(null, data, callback);
-            } catch(err) {
-                return finalize(err, null, callback);
-            }
+            return data;
         },
         /**
          * Fetches URL to download a generated report.
@@ -974,36 +767,24 @@ function WalmartMarketplace(args) {
          * @param {Object} [options]
          * @param {String} [options['WM_QOS.CORRELATION_ID']] A unique ID which identifies each API call and used to track and debug issues. Defaults to a random UUID.
          */
-        downloadReportUrl: async function(requestId, options, callback) {
-            try {
-                // Options are optional
-                if (!options) {
-                    options = {};
-                } else if (typeof options === 'function') {
-                    callback = options;
-                    options = {};
+        downloadReportUrl: async function(requestId, options = {}) {
+            const queryParameters = new URLSearchParams({ requestId });
+            const url = `${_options.url}/v3/reports/downloadReport?${queryParameters.toString()}`;
+
+            const response = await fetch(url, {
+                headers: {
+                    Accept: 'application/json',
+                    'WM_QOS.CORRELATION_ID': options['WM_QOS.CORRELATION_ID'] || crypto.randomUUID(),
+                    'WM_SEC.ACCESS_TOKEN': (await _this.authentication.getAccessToken()).access_token,
+                    'WM_SVC.NAME': _options['WM_SVC.NAME']
                 }
+            });
 
-                const queryParameters = new URLSearchParams({ requestId });
-                const url = `${_options.url}/v3/reports/downloadReport?${queryParameters.toString()}`;
-
-                const response = await fetch(url, {
-                    headers: {
-                        Accept: 'application/json',
-                        'WM_QOS.CORRELATION_ID': options['WM_QOS.CORRELATION_ID'] || crypto.randomUUID(),
-                        'WM_SEC.ACCESS_TOKEN': (await _this.authentication.getAccessToken()).access_token,
-                        'WM_SVC.NAME': _options['WM_SVC.NAME']
-                    }
-                });
-
-                if (!response.ok) {
-                    throw await HttpError.from(response);
-                }
-
-                return finalize(null, await response.json(), callback);
-            } catch(err) {
-                return finalize(err, null, callback);
+            if (!response.ok) {
+                throw await HttpError.from(response);
             }
+
+            return await response.json();
         },
         /**
          * Fetches a list of all report requests for specified search criteria by using query parameters. You can fetch details of report requests created in the last 30 days only.
@@ -1018,90 +799,30 @@ function WalmartMarketplace(args) {
          * @param {String} [options.requestSubmissionStartDate] Report request submittal start date for range of reports requested, in format: YYYY-MM-DDTHH:mm:ssZ
          * @param {String} [options['WM_QOS.CORRELATION_ID']] A unique ID which identifies each API call and used to track and debug issues. Defaults to a random UUID.
          */
-        getAllReportRequests: async function(reportType, options, callback) {
-            try {
-                // Options are optional
-                if (!options) {
-                    options = {};
-                } else if (typeof options === 'function') {
-                    callback = options;
-                    options = {};
-                }
+        getAllReportRequests: async function(reportType, options = {}) {
+            const reportRequests = [];
 
-                const reportRequests = [];
+            const fetchReportRequests = async cursor => {
+                let url;
 
-                const fetchReportRequests = async cursor => {
-                    let url;
+                if (cursor) {
+                    url = `${_options.url}/v3/reports/reportRequests?${cursor}`;
+                } else {
+                    const queryParameters = new URLSearchParams({ reportType });
 
-                    if (cursor) {
-                        url = `${_options.url}/v3/reports/reportRequests?${cursor}`;
-                    } else {
-                        const queryParameters = new URLSearchParams({ reportType });
-
-                        ['limit', 'reportVersion', 'requestStatus', 'requestSubmissionEndDate', 'requestSubmissionStartDate'].forEach(key => {
-                            if (Object.hasOwn(options, key)) {
-                                queryParameters.set(key, options[key]);
-                            }
-                        });
-
-                        url = `${_options.url}/v3/reports/reportRequests?${queryParameters.toString()}`;
-                    }
-
-                    const response = await fetch(url, {
-                        headers: {
-                            Accept: 'application/json',
-                            'WM_QOS.CORRELATION_ID': crypto.randomUUID(),
-                            'WM_SEC.ACCESS_TOKEN': (await _this.authentication.getAccessToken()).access_token,
-                            'WM_SVC.NAME': _options['WM_SVC.NAME']
+                    ['limit', 'reportVersion', 'requestStatus', 'requestSubmissionEndDate', 'requestSubmissionStartDate'].forEach(key => {
+                        if (Object.hasOwn(options, key)) {
+                            queryParameters.set(key, options[key]);
                         }
                     });
 
-                    if (!response.ok) {
-                        throw await HttpError.from(response);
-                    }
-
-                    const data = await response.json();
-
-                    if (Array.isArray(data?.requests)) {
-                        reportRequests.push(...data.requests);
-
-                        // Check for more pages and if pagination is requested
-                        if (options.autoPagination && data?.nextCursor) {
-                            await fetchReportRequests(data.nextCursor);
-                        }
-                    }
-                };
-
-                // Initial call to fetch report requests
-                await fetchReportRequests(null);
-
-                return finalize(null, reportRequests, callback);
-            } catch(err) {
-                return finalize(err, null, callback);
-            }
-        },
-        /**
-         * This API will list all the available Marketplace reconciliation report dates for the Seller.
-         * @see https://developer.walmart.com/api/us/mp/reports#operation/getAvailableV1ReconReportDates
-         * @param {Object} [options]
-         * @param {String} [options['WM_QOS.CORRELATION_ID']] A unique ID which identifies each API call and used to track and debug issues. Defaults to a random UUID.
-         */
-        getAvailableReconciliationReportDates: async function(options, callback) {
-            try {
-                // Options are optional
-                if (!options) {
-                    options = {};
-                } else if (typeof options === 'function') {
-                    callback = options;
-                    options = {};
+                    url = `${_options.url}/v3/reports/reportRequests?${queryParameters.toString()}`;
                 }
-
-                const url = `${_options.url}/v3/report/reconreport/availableReconFiles?reportVersion=v1`;
 
                 const response = await fetch(url, {
                     headers: {
                         Accept: 'application/json',
-                        'WM_QOS.CORRELATION_ID': options['WM_QOS.CORRELATION_ID'] || crypto.randomUUID(),
+                        'WM_QOS.CORRELATION_ID': crypto.randomUUID(),
                         'WM_SEC.ACCESS_TOKEN': (await _this.authentication.getAccessToken()).access_token,
                         'WM_SVC.NAME': _options['WM_SVC.NAME']
                     }
@@ -1111,10 +832,46 @@ function WalmartMarketplace(args) {
                     throw await HttpError.from(response);
                 }
 
-                return finalize(null, await response.json(), callback);
-            } catch(err) {
-                return finalize(err, null, callback);
+                const data = await response.json();
+
+                if (Array.isArray(data?.requests)) {
+                    reportRequests.push(...data.requests);
+
+                    // Check for more pages and if pagination is requested
+                    if (options.autoPagination && data?.nextCursor) {
+                        await fetchReportRequests(data.nextCursor);
+                    }
+                }
+            };
+
+            // Initial call to fetch report requests
+            await fetchReportRequests(null);
+
+            return reportRequests;
+        },
+        /**
+         * This API will list all the available Marketplace reconciliation report dates for the Seller.
+         * @see https://developer.walmart.com/api/us/mp/reports#operation/getAvailableV1ReconReportDates
+         * @param {Object} [options]
+         * @param {String} [options['WM_QOS.CORRELATION_ID']] A unique ID which identifies each API call and used to track and debug issues. Defaults to a random UUID.
+         */
+        getAvailableReconciliationReportDates: async function(options = {}) {
+            const url = `${_options.url}/v3/report/reconreport/availableReconFiles?reportVersion=v1`;
+
+            const response = await fetch(url, {
+                headers: {
+                    Accept: 'application/json',
+                    'WM_QOS.CORRELATION_ID': options['WM_QOS.CORRELATION_ID'] || crypto.randomUUID(),
+                    'WM_SEC.ACCESS_TOKEN': (await _this.authentication.getAccessToken()).access_token,
+                    'WM_SVC.NAME': _options['WM_SVC.NAME']
+                }
+            });
+
+            if (!response.ok) {
+                throw await HttpError.from(response);
             }
+
+            return await response.json();
         },
         /**
          * Seller can download the reconciliation report for a specific date using this API. Dates available to be downloaded can be found by using the Get available reconciliation report dates API.
@@ -1124,78 +881,17 @@ function WalmartMarketplace(args) {
          * @param {Boolean} [options.autoPagination] If true, automatically fetches all pages of results. Defaults to false.
          * @param {String} [options['WM_QOS.CORRELATION_ID']] A unique ID which identifies each API call and used to track and debug issues. Defaults to a random UUID.
          */
-        getReconciliationReport: async function(reportDate, options, callback) {
-            try {
-                // Options are optional
-                if (!options) {
-                    options = {};
-                } else if (typeof options === 'function') {
-                    callback = options;
-                    options = {};
-                }
+        getReconciliationReport: async function(reportDate, options = {}) {
+            const reportData = [];
 
-                const reportData = [];
-
-                const fetchReportRequests = async offset => {
-                    const queryParameters = new URLSearchParams({ noOfRecords: 1000, offset: offset || 0, reportDate });
-                    const url = `${_options.url}/v3/report/reconreport/reconFileJson?${queryParameters.toString()}`;
-
-                    const response = await fetch(url, {
-                        headers: {
-                            Accept: 'application/json',
-                            'WM_QOS.CORRELATION_ID': crypto.randomUUID(),
-                            'WM_SEC.ACCESS_TOKEN': (await _this.authentication.getAccessToken()).access_token,
-                            'WM_SVC.NAME': _options['WM_SVC.NAME']
-                        }
-                    });
-
-                    if (!response.ok) {
-                        throw await HttpError.from(response);
-                    }
-
-                    const data = await response.json();
-
-                    if (Array.isArray(data?.reportData)) {
-                        reportData.push(...data.reportData);
-
-                        // Check for more pages and if pagination is requested
-                        if (options.autoPagination && Number(data?.nextOffset) > 0) {
-                            await fetchReportRequests(data.nextOffset);
-                        }
-                    }
-                };
-
-                // Initial call to fetch report requests
-                await fetchReportRequests(null);
-
-                return finalize(null, reportData, callback);
-            } catch(err) {
-                return finalize(err, null, callback);
-            }
-        },
-        /**
-         * Fetches status and other details of a report request by providing a requestID. You can fetch details of report request created in the last 30 days only.
-         * @see https://developer.walmart.com/api/us/mp/onrequestreports#operation/getSingleRequestStatus
-         * @param {String} requestId Automated ID generated by system that uniquely identifies the report request.
-         * @param {Object} [options]
-         * @param {String} [options['WM_QOS.CORRELATION_ID']] A unique ID which identifies each API call and used to track and debug issues. Defaults to a random UUID.
-         */
-        reportRequestStatus: async function(requestId, options, callback) {
-            try {
-                // Options are optional
-                if (!options) {
-                    options = {};
-                } else if (typeof options === 'function') {
-                    callback = options;
-                    options = {};
-                }
-
-                const url = `${_options.url}/v3/reports/reportRequests/${requestId}`;
+            const fetchReportRequests = async offset => {
+                const queryParameters = new URLSearchParams({ noOfRecords: 1000, offset: offset || 0, reportDate });
+                const url = `${_options.url}/v3/report/reconreport/reconFileJson?${queryParameters.toString()}`;
 
                 const response = await fetch(url, {
                     headers: {
                         Accept: 'application/json',
-                        'WM_QOS.CORRELATION_ID': options['WM_QOS.CORRELATION_ID'] || crypto.randomUUID(),
+                        'WM_QOS.CORRELATION_ID': crypto.randomUUID(),
                         'WM_SEC.ACCESS_TOKEN': (await _this.authentication.getAccessToken()).access_token,
                         'WM_SVC.NAME': _options['WM_SVC.NAME']
                     }
@@ -1205,10 +901,47 @@ function WalmartMarketplace(args) {
                     throw await HttpError.from(response);
                 }
 
-                return finalize(null, await response.json(), callback);
-            } catch(err) {
-                return finalize(err, null, callback);
+                const data = await response.json();
+
+                if (Array.isArray(data?.reportData)) {
+                    reportData.push(...data.reportData);
+
+                    // Check for more pages and if pagination is requested
+                    if (options.autoPagination && Number(data?.nextOffset) > 0) {
+                        await fetchReportRequests(data.nextOffset);
+                    }
+                }
+            };
+
+            // Initial call to fetch report requests
+            await fetchReportRequests(null);
+
+            return reportData;
+        },
+        /**
+         * Fetches status and other details of a report request by providing a requestID. You can fetch details of report request created in the last 30 days only.
+         * @see https://developer.walmart.com/api/us/mp/onrequestreports#operation/getSingleRequestStatus
+         * @param {String} requestId Automated ID generated by system that uniquely identifies the report request.
+         * @param {Object} [options]
+         * @param {String} [options['WM_QOS.CORRELATION_ID']] A unique ID which identifies each API call and used to track and debug issues. Defaults to a random UUID.
+         */
+        reportRequestStatus: async function(requestId, options = {}) {
+            const url = `${_options.url}/v3/reports/reportRequests/${requestId}`;
+
+            const response = await fetch(url, {
+                headers: {
+                    Accept: 'application/json',
+                    'WM_QOS.CORRELATION_ID': options['WM_QOS.CORRELATION_ID'] || crypto.randomUUID(),
+                    'WM_SEC.ACCESS_TOKEN': (await _this.authentication.getAccessToken()).access_token,
+                    'WM_SVC.NAME': _options['WM_SVC.NAME']
+                }
+            });
+
+            if (!response.ok) {
+                throw await HttpError.from(response);
             }
+
+            return await response.json();
         }
     };
 }
