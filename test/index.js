@@ -7,6 +7,137 @@ const cache = require('memory-cache');
 const WalmartMarketplace = require('../index');
 
 test('WalmartMarketplace', { concurrency: true }, async (t) => {
+    t.test('WalmartMarketplace.feeds', { concurrency: true }, async (t) => {
+        t.test('WalmartMarketplace.feeds.getAllFeedStatuses(options)', { concurrency: true }, async (t) => {
+            t.test('should return json', async () => {
+                let walmartMarketplace = new WalmartMarketplace({
+                    clientId: process.env.CLIENT_ID,
+                    clientSecret: process.env.CLIENT_SECRET
+                });
+
+                // HACK: The following code adds an access token to the cache for a different environment
+                cache.clear();
+                const accessToken = await walmartMarketplace.authentication.getAccessToken();
+                const json = JSON.parse(cache.keys()[0]);
+                json.url = 'https://httpbingo.org/json#';
+                cache.put(JSON.stringify(json), accessToken);
+
+                walmartMarketplace = new WalmartMarketplace({
+                    clientId: process.env.CLIENT_ID,
+                    clientSecret: process.env.CLIENT_SECRET,
+                    url: 'https://httpbingo.org/json#'
+                });
+
+                const feedStatuses = await walmartMarketplace.feeds.getAllFeedStatuses({ limit: 1 });
+                assert(feedStatuses);
+            });
+
+            t.test('should throw error for non 200 status code', async () => {
+                let walmartMarketplace = new WalmartMarketplace({
+                    clientId: process.env.CLIENT_ID,
+                    clientSecret: process.env.CLIENT_SECRET
+                });
+
+                // HACK: The following code adds an access token to the cache for a different environment
+                cache.clear();
+                const accessToken = await walmartMarketplace.authentication.getAccessToken();
+                const json = JSON.parse(cache.keys()[0]);
+                json.url = 'https://httpbingo.org/status/500#';
+                cache.put(JSON.stringify(json), accessToken);
+
+                walmartMarketplace = new WalmartMarketplace({
+                    clientId: process.env.CLIENT_ID,
+                    clientSecret: process.env.CLIENT_SECRET,
+                    url: 'https://httpbingo.org/status/500#'
+                });
+
+                try {
+                    await walmartMarketplace.feeds.getAllFeedStatuses();
+                    assert.fail('Expected an error to be thrown');
+                } catch (err) {
+                    assert(err);
+                    assert.strictEqual(err.cause.status, 500);
+                    assert.strictEqual(err.message, '500 Internal Server Error');
+                }
+            });
+        });
+
+        t.test('WalmartMarketplace.feeds.getAllFeedStatuses(options, callback)', { concurrency: true }, async (t) => {
+            t.test('should return an error for non 200 status code', (t, done) => {
+                const walmartMarketplace = new WalmartMarketplace({
+                    clientId: process.env.CLIENT_ID,
+                    clientSecret: process.env.CLIENT_SECRET
+                });
+
+                walmartMarketplace.feeds.getAllFeedStatuses(function(err, feedStatuses) {
+                    // HACK: In the sandbox environment, this endpoint always seems to return a 520
+                    assert(err);
+                    assert.strictEqual(err.cause.status, 520);
+                    assert.strictEqual(feedStatuses, null);
+                    done();
+                });
+            });
+        });
+
+        t.test('WalmartMarketplace.feeds.getFeedItemStatus(feedId, options)', { concurrency: true }, async (t) => {
+            t.test('should return json', async () => {
+                let walmartMarketplace = new WalmartMarketplace({
+                    clientId: process.env.CLIENT_ID,
+                    clientSecret: process.env.CLIENT_SECRET
+                });
+
+                // HACK: The following code adds an access token to the cache for a different environment
+                cache.clear();
+                const accessToken = await walmartMarketplace.authentication.getAccessToken();
+                const json = JSON.parse(cache.keys()[0]);
+                json.url = 'https://httpbingo.org/json#';
+                cache.put(JSON.stringify(json), accessToken);
+
+                walmartMarketplace = new WalmartMarketplace({
+                    clientId: process.env.CLIENT_ID,
+                    clientSecret: process.env.CLIENT_SECRET,
+                    url: 'https://httpbingo.org/json#'
+                });
+
+                const feedItemStatus = await walmartMarketplace.feeds.getFeedItemStatus('12234EGGT564YTEGFA@AQMBAQA', { includeDetails: true });
+                assert(feedItemStatus);
+            });
+
+            t.test('should throw error for non 200 status code', async () => {
+                const walmartMarketplace = new WalmartMarketplace({
+                    clientId: process.env.CLIENT_ID,
+                    clientSecret: process.env.CLIENT_SECRET
+                });
+
+                try {
+                    await walmartMarketplace.feeds.getFeedItemStatus('12234EGGT564YTEGFA@AQMBAQA');
+                    assert.fail('Expected an error to be thrown');
+                } catch (err) {
+                    assert(err);
+                    assert.strictEqual(err.cause.status, 404);
+                    assert.strictEqual(err.message, '404 Not Found');
+                }
+            });
+        });
+
+        t.test('WalmartMarketplace.feeds.getFeedItemStatus(feedId, options, callback)', { concurrency: true }, async (t) => {
+            t.test('should return an error for non 200 status code', (t, done) => {
+                const walmartMarketplace = new WalmartMarketplace({
+                    clientId: process.env.CLIENT_ID,
+                    clientSecret: process.env.CLIENT_SECRET
+                });
+
+                walmartMarketplace.feeds.getFeedItemStatus('12234EGGT564YTEGFA@AQMBAQA', function(err, feedItemStatus) {
+                    assert(err);
+                    assert.strictEqual(err.cause.status, 404);
+                    assert.strictEqual(err.message, '404 Not Found');
+                    assert.strictEqual(feedItemStatus, null);
+                    done();
+                });
+            });
+        });
+    });
+
     t.test('WalmartMarketplace.inventory', { concurrency: true }, async (t) => {
         t.test('WalmartMarketplace.inventory.getInventory(sku, options)', { concurrency: true }, async (t) => {
             t.test('should return json', async () => {
