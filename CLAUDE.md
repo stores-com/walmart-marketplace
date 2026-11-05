@@ -30,12 +30,13 @@ This is a Node.js SDK for the Walmart Marketplace API, providing a comprehensive
 
 ### Core Design Patterns
 
-1. **Dual API Support**: Every method supports both Promise-based and callback-based invocation patterns through a `finalize` helper function in `/Users/shawnmiller/GitHub/walmart-marketplace/index.js:8`.
+1. **Promise API**: Every method is an `async` function that resolves with the response data or throws an `HttpError`.
 
 2. **Authentication & Caching**: OAuth tokens are automatically cached in memory with TTL set to half the expiration time. The cache key is based on the client credentials to support multiple configurations.
 
 3. **Module Structure**: The main class `WalmartMarketplace` organizes API endpoints into logical modules:
    - `authentication` - OAuth token management
+   - `feeds` - Feed and item processing status
    - `inventory` - Get/update inventory levels  
    - `items` - Item management (bulk setup, search, retire)
    - `orders` - Order processing (acknowledge, retrieve, ship)
@@ -55,4 +56,4 @@ This is a Node.js SDK for the Walmart Marketplace API, providing a comprehensive
 
 ### Testing Notes
 
-Tests require valid Walmart API credentials set as environment variables. The test suite uses Node.js built-in test runner and includes both positive and negative test cases, testing both Promise and callback patterns.
+Tests require valid Walmart API credentials set as environment variables. The test suite uses Node.js built-in test runner and includes both positive and negative test cases.
