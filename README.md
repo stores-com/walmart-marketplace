@@ -57,6 +57,126 @@ walmartMarketplace.authentication.getAccessToken(function(err, accessToken) {
 }
 ```
 
+## walmartMarketplace.feeds.getAllFeedStatuses([options])
+
+Returns the feed statuses for all the specified Feed IDs.
+
+https://developer.walmart.com/us-marketplace/reference/getallfeedstatuses
+
+**Promise Example**
+```javascript
+const feedStatuses = await walmartMarketplace.feeds.getAllFeedStatuses();
+console.log(feedStatuses);
+```
+
+**Callback Example**
+```javascript
+walmartMarketplace.feeds.getAllFeedStatuses(function(err, feedStatuses) {
+    console.log(feedStatuses);
+});
+```
+
+**Options**
+```
+{
+    feedId: '12234EGGT564YTEGFA@AQMBAQA', // A unique ID returned from the Bulk Upload API, used for tracking the feed file.
+    limit: 50, // The number of entities to be returned. Cannot be more than 50 entities. Default: 50.
+    offset: 0, // The object response to start with, where 0 is the first entity that can be requested. Default: 0.
+    'WM_QOS.CORRELATION_ID': '00000000-0000-0000-0000-000000000000' // A unique ID which identifies each API call and used to track and debug issues. Defaults to a random UUID.
+}
+```
+
+**Returns**
+```
+{
+    "totalResults": 1,
+    "offset": 0,
+    "limit": 50,
+    "results": {
+        "feed": [
+            {
+                "feedId": "12234EGGT564YTEGFA@AQMBAQA",
+                "feedSource": "SELLER_API",
+                "feedType": "MP_ITEM_MATCH",
+                "itemsReceived": 1,
+                "itemsSucceeded": 1,
+                "itemsFailed": 0,
+                "itemsProcessing": 0,
+                "feedStatus": "PROCESSED",
+                "feedDate": 1793848504028,
+                "modifiedDtm": 1793848512332
+            }
+        ]
+    }
+}
+```
+
+## walmartMarketplace.feeds.getFeedItemStatus(feedId, [options])
+
+Returns the feed and item status for a specified Feed ID.
+
+https://developer.walmart.com/us-marketplace/reference/getfeeditemstatus
+
+**Promise Example**
+```javascript
+const feedItemStatus = await walmartMarketplace.feeds.getFeedItemStatus('12234EGGT564YTEGFA@AQMBAQA', { includeDetails: true });
+console.log(feedItemStatus);
+```
+
+**Callback Example**
+```javascript
+walmartMarketplace.feeds.getFeedItemStatus('12234EGGT564YTEGFA@AQMBAQA', { includeDetails: true }, function(err, feedItemStatus) {
+    console.log(feedItemStatus);
+});
+```
+
+**Options**
+```
+{
+    includeDetails: true, // Includes details of each entity in the feed. Default: false.
+    limit: 50, // The number of entities to be returned. Cannot be more than 50 entities when includeDetails is true. Default: 50.
+    offset: 0, // The object response to start with, where 0 is the first entity that can be requested. Default: 0.
+    'WM_QOS.CORRELATION_ID': '00000000-0000-0000-0000-000000000000' // A unique ID which identifies each API call and used to track and debug issues. Defaults to a random UUID.
+}
+```
+
+**Returns**
+```
+{
+    "feedId": "12234EGGT564YTEGFA@AQMBAQA",
+    "feedStatus": "PROCESSED",
+    "feedSubmissionDate": 1793848504028,
+    "itemsReceived": 1,
+    "itemsSucceeded": 0,
+    "itemsFailed": 1,
+    "itemsProcessing": 0,
+    "offset": 0,
+    "limit": 50,
+    "itemDetails": {
+        "itemIngestionStatus": [
+            {
+                "martId": 0,
+                "sku": "30348_KFTest",
+                "index": 0,
+                "itemid": "",
+                "productIdentifiers": {},
+                "ingestionStatus": "DATA_ERROR",
+                "ingestionErrors": {
+                    "ingestionError": [
+                        {
+                            "type": "DATA_ERROR",
+                            "code": "ERR_PDI_0047",
+                            "field": "Please provide a valid Product ID (i.e., GTIN, UPC, EAN, ISSN, ISBN, etc.). For more information, search 'product identifiers' in the Knowledge Base.",
+                            "description": "Please provide a valid Product ID (i.e., GTIN, UPC, EAN, ISSN, ISBN, etc.). For more information, search 'product identifiers' in the Knowledge Base."
+                        }
+                    ]
+                }
+            }
+        ]
+    }
+}
+```
+
 ## walmartMarketplace.inventory.getInventory(sku, [options])
 
 You can use this API to get the inventory for a given item.

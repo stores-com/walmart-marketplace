@@ -100,6 +100,104 @@ function WalmartMarketplace(args) {
         }
     };
 
+    this.feeds = {
+        /**
+         * Returns the feed statuses for all the specified Feed IDs.
+         * @see https://developer.walmart.com/us-marketplace/reference/getallfeedstatuses
+         * @param {Object} [options]
+         * @param {String} [options.feedId] A unique ID returned from the Bulk Upload API, used for tracking the feed file.
+         * @param {Number} [options.limit] The number of entities to be returned. Cannot be more than 50 entities. Default: 50.
+         * @param {Number} [options.offset] The object response to start with, where 0 is the first entity that can be requested. Default: 0.
+         * @param {String} [options['WM_QOS.CORRELATION_ID']] A unique ID which identifies each API call and used to track and debug issues. Defaults to a random UUID.
+         */
+        getAllFeedStatuses: async function(options, callback) {
+            try {
+                // Options are optional
+                if (!options) {
+                    options = {};
+                } else if (typeof options === 'function') {
+                    callback = options;
+                    options = {};
+                }
+
+                const queryParameters = new URLSearchParams();
+
+                ['feedId', 'limit', 'offset'].forEach(key => {
+                    if (Object.hasOwn(options, key)) {
+                        queryParameters.set(key, options[key]);
+                    }
+                });
+
+                const url = `${_options.url}/v3/feeds?${queryParameters.toString()}`;
+
+                const response = await fetch(url, {
+                    headers: {
+                        Accept: 'application/json',
+                        'WM_QOS.CORRELATION_ID': options['WM_QOS.CORRELATION_ID'] || crypto.randomUUID(),
+                        'WM_SEC.ACCESS_TOKEN': (await _this.authentication.getAccessToken()).access_token,
+                        'WM_SVC.NAME': _options['WM_SVC.NAME']
+                    }
+                });
+
+                if (!response.ok) {
+                    throw await HttpError.from(response);
+                }
+
+                return finalize(null, await response.json(), callback);
+            } catch(err) {
+                return finalize(err, null, callback);
+            }
+        },
+        /**
+         * Returns the feed and item status for a specified Feed ID.
+         * @see https://developer.walmart.com/us-marketplace/reference/getfeeditemstatus
+         * @param {String} feedId A unique ID returned from the Bulk Upload API, used for tracking the feed file.
+         * @param {Object} [options]
+         * @param {Boolean} [options.includeDetails] Includes details of each entity in the feed. Default: false.
+         * @param {Number} [options.limit] The number of entities to be returned. Cannot be more than 50 entities when includeDetails is true. Default: 50.
+         * @param {Number} [options.offset] The object response to start with, where 0 is the first entity that can be requested. Default: 0.
+         * @param {String} [options['WM_QOS.CORRELATION_ID']] A unique ID which identifies each API call and used to track and debug issues. Defaults to a random UUID.
+         */
+        getFeedItemStatus: async function(feedId, options, callback) {
+            try {
+                // Options are optional
+                if (!options) {
+                    options = {};
+                } else if (typeof options === 'function') {
+                    callback = options;
+                    options = {};
+                }
+
+                const queryParameters = new URLSearchParams();
+
+                ['includeDetails', 'limit', 'offset'].forEach(key => {
+                    if (Object.hasOwn(options, key)) {
+                        queryParameters.set(key, options[key]);
+                    }
+                });
+
+                const url = `${_options.url}/v3/feeds/${encodeURIComponent(feedId)}?${queryParameters.toString()}`;
+
+                const response = await fetch(url, {
+                    headers: {
+                        Accept: 'application/json',
+                        'WM_QOS.CORRELATION_ID': options['WM_QOS.CORRELATION_ID'] || crypto.randomUUID(),
+                        'WM_SEC.ACCESS_TOKEN': (await _this.authentication.getAccessToken()).access_token,
+                        'WM_SVC.NAME': _options['WM_SVC.NAME']
+                    }
+                });
+
+                if (!response.ok) {
+                    throw await HttpError.from(response);
+                }
+
+                return finalize(null, await response.json(), callback);
+            } catch(err) {
+                return finalize(err, null, callback);
+            }
+        }
+    };
+
     this.inventory = {
         /**
          * You can use this API to get the inventory for a given item.
